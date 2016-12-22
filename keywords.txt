@@ -1,7 +1,7 @@
 /*
  *  GobbitLineCommand - Library for line following, intersection detection, and basic motor control of Gobbit robot.
  *  Created by Jason Talley 
- *	Last edit 12/13/2016
+ *	Last edit 12/22/2016
  *  Released under GNU agreement
  */ 
 
@@ -26,6 +26,7 @@ drive	KEYWORD2
 calibrateLineSensor	KEYWORD2
 followLine	KEYWORD2
 move	KEYWORD2
+setMotors	KEYWORD2
 brakeMotors	KEYWORD2
 gripClose	KEYWORD2
 gripOpen	KEYWORD2
@@ -34,6 +35,7 @@ backup	KEYWORD2
 checkBattery	KEYWORD2
 readBatteryVolts	KEYWORD2
 serialPrintCurrentSettings	KEYWORD2
+
 
 #######################################
 # setup and loop functions, as well as the Serial keywords (KEYWORD3)
