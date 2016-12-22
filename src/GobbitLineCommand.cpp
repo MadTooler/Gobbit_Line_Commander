@@ -1,7 +1,7 @@
 /*
  *  GobbitLineCommand.h - Library for line following, intersection detection, and basic motor control of Gobbit robot.
  *  Created by Jason Talley 
- *	Last edit 12/13/2016
+ *	Last edit 12/22/2016
  *  Released under GNU agreement
  */
 
@@ -226,6 +226,9 @@ void GobbitLineCommand::beginGobbit(void)
   if(useAFMS)
   {
 	// Adafruit Motorshield v2.3
+	
+	// create with the default frequency 1.6KHz
+	AFMS.begin();  
 
 	//set both motors to stop
 	setMotors(0,0);

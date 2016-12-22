@@ -1,7 +1,7 @@
 /*
  *  GobbitLineCommand.h - Library for line following, intersection detection, and basic motor control of Gobbit robot.
  *  Created by Jason Talley 
- *	Last edit 12/13/2016
+ *	Last edit 12/22/2016
  *  Released under GNU agreement
  */
 
@@ -138,6 +138,7 @@ class GobbitLineCommand
 	void followLine(); // simple line follow without any intersection detection
 	void drive(char turn); // receives turn request and returns location/barcode value
 	void move(float moveSpeed, float moveTurn); // simple moves without any line following. Typically used with delay statements as sensorless control.
+	void setMotors(float leftVelocity, float rightVelocity); // direct motor control.  Must have run beginGobbit first.
 	void brakeMotors(void);  // quick reversal of motors to stop fast forward motion.
 	void backup(int speed, int delayTime); // backup with declared speed (100 max) and for a period of milliseconds	
 	void gripClose(void); // closes the gripper to the declared closed angle
@@ -160,7 +161,6 @@ class GobbitLineCommand
     void turn(char turnDir);
     void noWayFreakOut();
     float speedAdjust(int currentDistance);
-	void setMotors(float leftVelocity, float rightVelocity);
 	
 	
 	// variables
