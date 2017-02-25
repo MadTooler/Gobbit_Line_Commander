@@ -1,0 +1,90 @@
+Todo's
+ 
+	Current items todo:
+	
+		Cleanup coarse and related.  
+		
+			have to keep course.  maybe separate basic line follow tune or something?
+		
+		Update tunes to defines
+	
+	
+		Make more efficient to reduce size of library.
+		
+			Go through functions and determine if any should be removed for space or because not expected to be used.
+				
+				Evaluate for removal and/or new library or .h/cpp for optional include:
+					serialPrintCurrentSettings
+					readBatteryVolts
+					checkBattery
+					
+			Go over variable types and usage and reduce memory usage where possible.
+				Note some small values that are declared int or float values need to stay that type for math formulas to work properly or for errant values at function calls.
+				
+				
+		Testing:
+		
+
+
+			
+		Examples
+		
+			Read through pid tune and revise.  
+				Add coarse instructions.
+		
+		
+			Light and Servo Targets
+			
+		
+		PDF instructions/function manual to be created added to extras folder
+			Link to PDF instructions on github and/or website and local to library if possible. 
+			**** may only use function list example so easy access and simple copy/paste
+		
+		
+		In turnPID
+			Determine if need to override ki
+			Determine if using a portion of PV (currently %70) is best method or if formula needs to be adjusted
+			**** the current settings seem to be working well, probably leave both as is
+
+
+	Later Todo's
+	
+		Add pictures to github readme
+
+		Turn YR,YL (at y right/left) in drive/turn function
+
+		Refine turnPID.
+
+		serialPrintCurrentSettings does not show calSpeed unless after calibrateLineSensor(), but it is problematic to get that reading unless robot is actually calibrating on a board.
+			Possible improvement on serialPrintCurrentSettings to show calSpeed, but not if have to declare it outside of calibrateLineSensor().
+			**** Will leave as is so calibrateLineSensor() follows same format as other motor commands where the speed value is applied with the call of the function.
+
+		Add a destructor for memory free up at exit... ??
+
+		Make loading Adafruit Motor Shield V2 Library conditional, if possible.  
+			It may not be possible without requiring maybe the config.h files defines to be modded with an adafruit_ms then add ifdefs.
+			Not sure it can be done another way.
+
+		Determine if should, then make beepCycle a WDT (watch dog timer) or other wakeup timer interrupt and remove all the calls.
+			Would be nice, but probably not a good idea since this would be very board specific and have possible conflict issues with other libraries and functions.
+			Cleaner beepCycle use or functionality should be developed.
+			*****Probably not going to use a timer.  It is not that critical of a function, and it would be nice to keep the timers and interrupts available for other's use in main sketch.
+
+		Improve format for arduino library manager to auto load dependants.
+			Current manager does not have capability to load QTRsensors and other libraries if declared as dependants
+			Have to wait for newer version.
+			
+		Barcode reading?  Similar to findMark process, but a bit more challenging.  
+			**** probably not since this may be too heavy for the library that is already big.
+			
+
+			
+	General House cleaning to do before publishing new releases:
+		
+		**** delete comments with the **** within, where appropriate.  These are flags for areas needing cleanup or more significant improvement.
+		
+		Update change log.
+			
+		Update any changes in keywords.
+		
+		Confirm all examples do not have any compile errors.

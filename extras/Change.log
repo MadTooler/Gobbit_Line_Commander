@@ -1,0 +1,73 @@
+change log
+
+0.0.6
+
+	Change Log Started
+	
+	Reduced some variables to bytes for conservation of memory.
+
+	Added beep functionality for general use and for target applications.
+
+	Fixed error in intersection detection where it would not time out from detection on large dark surface.
+
+	Created Default tune variables .h files for motor driver and voltage relative values.
+		AdafruitMSDefaults.h
+		ArdumotoDefaults.h
+		
+	Created Default config file for other library values.
+		config.h
+	
+	Increased time for intersection detection calculation while driving through before it times out.
+		see in config.h file : #define FIND_INTERSECTION_MAXTIME 1000
+	
+	Created time for marker detection while driving or lineFollow in intersection mode, before it times out with FIND_INTERSECTION_MAXTIME.
+		see in config.h file : #define FIND_MARK_TIME	85
+
+	Added routine to extend turn cycle to make sure outer sensor is cleared before centering.  The outer sensors still being over the line appeared to be the issue with the U-turns ('U') sometimens not properly working at full intersections.
+
+	Added brakeMotors().  This stops and momentarily reverses the motors at full power.  Not a true electronic break, and a bit rough on the motors and drivers, but will keep it unless hardware issues occur later.
+	
+	Added brakeSpeed variable as the threshold speed the motors should be running before enabling motor braking.  
+	
+	Created time define for braking.
+		see in config.h file : #define BRAKING_TIME	30
+		
+	Added brakeStrength as a percentage of the BRAKING_TIME the motors will be reversed during the brakeMotors() function.  This is used by drive and turn functions.
+	
+	With better turn sensing, now able to add motor braking at all turns when higher battery voltage and when higher max speeds are called above brakeSpeed value, which makes for much crisper turns, even at higher speeds. The only noticable issue is the back of the robot may hop off the ground when the breaking is really aggressive.
+
+	Moved intersection detection before line follow adjust to try and mitigate "twirks" at intersections.
+
+	Added pastRead value use for followLine when in Drive mode to try to mitigate "twirks" at crossing forward through intersections.  If this results in over oscillation of following during drive mode, it will be disabled in later releases.
+	
+	followLine() now has four modes:
+		followLine(0);  // follow along the line and never exit so it will not do anything else outside of the function
+		followLine(1);  // do 1 thing... run through the followLine function one time and make only one motor adjustment then exit
+		followLine(2);  // do 2 things... run through the followLine function one time and make only one motor adjustment while checking if an intersection is present then exit
+		followLine(3);  // follow along the line until an intersection is found then exit
+	
+	Cleaned drive() function.
+	
+	Added readSonarInches() function.  
+	
+	Made distanceInch value of sonar range reading public.  This will be updated everytime followLine or drive() is used if the setSonar has been called, or if the readSonarInches has been directly called.
+	
+	Removed use of offCenterSetPoint variable.
+	
+	Changed void setDriveTurnHighLowStoppoint(int highTurn, int lowTurn, float stopPoint); into two
+		void setTurnHighSpeed(int highTurn); 
+		void setTurnLowSpeed(int lowTurn); 
+	
+	Changed turn() to use turnPID() for the end point of turn.  Still rough, and a bit overshoots still with the ardumoto, but overall an improvement requiring less variable tuning.
+	
+	Added i to setPD -> setPID
+		i values in defaults need better test/tune.
+	
+	Removed setFastPDmultiplier and created 
+		setPIDcoarse(p,i,d) for couarse/fast/aggressive settings of P, I, and D.
+		setPIDfineRange(0 to 1).
+		
+	Added detectLine()
+	
+	Added catchLine()
+	
