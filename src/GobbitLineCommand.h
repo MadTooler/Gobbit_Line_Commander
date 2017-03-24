@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 02/12/2017
+*	Last edit 03/22/2017
 *	Released under GNU agreement
 */
 
@@ -27,7 +27,7 @@
 *				Pololu QTR-8RC RC Reflectance Sensor Array
 *
 *			  see: Zagros Robot Starter Kit - Gobbit
-*			       (http://www.zagrosrobotics.com/)
+*			       http://www.zagrosrobotics.com/
 *
 *		2) Black electrical tape line course on white background
 *

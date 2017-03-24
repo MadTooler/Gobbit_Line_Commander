@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 02/12/2017
+*	Last edit 03/24/2017
 *	Released under GNU agreement
 */
 
@@ -27,7 +27,7 @@
 *				Pololu QTR-8RC RC Reflectance Sensor Array
 *
 *			  see: Zagros Robot Starter Kit - Gobbit
-*			       (http://www.zagrosrobotics.com/)
+*			       http://www.zagrosrobotics.com/
 *
 *		2) Black electrical tape line course on white background
 *
@@ -1046,32 +1046,21 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 	if (moveSpeed != 0) {
 
 		// moveTurn is full right
-		if (moveTurn == 100) // adjust right
+		if (moveTurn == 100) // spin right
 		{
 
-			// forward motion as if wheels are turned to right
-			if (moveSpeed > 0) {
-				setMotors(moveSpeed, -moveSpeed);
-			}
+			// spin to right ignoring -/+ of speed
+		
+			setMotors(abs(moveSpeed), -abs(moveSpeed));
 
-			// reverse motion as if backing up with wheels turned to right
-			else {
-				setMotors(moveSpeed, abs(moveSpeed));
-			}
 		}
 
 		// moveTurn is full left
-		else if (moveTurn == -100) // adjust left
+		else if (moveTurn == -100) // spin left
 		{
-			// forward motion as if wheels are turned to left
-			if (moveSpeed > 0) {
-				setMotors(-moveSpeed, moveSpeed);
-			}
-
-			// reverse motion as if backing up with wheels turned to right
-			else {
-				setMotors(abs(moveSpeed), moveSpeed);
-			}
+			// spin to left ignoring -/+ of speed
+		
+			setMotors(-abs(moveSpeed), abs(moveSpeed));
 		}
 
 		// move turn is not full left or right
@@ -1081,12 +1070,12 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 
 			// steer while moving forward
 			if (moveSpeed > 0) {
-				// steer to the right while moving forward
+				// forward motion while pivoting/turning to the right
 				if (moveTurn > 0) {
 					setMotors(moveSpeed, thisTurnSpeed);
 				}
 
-				// steer to the left while moving forward
+				// forward motion while pivoting/turning to the left
 				else if (moveTurn < 0) {
 					setMotors(thisTurnSpeed, moveSpeed);
 				}
@@ -1099,12 +1088,12 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 
 			// steer while moving in reverse
 			else if (moveSpeed < 0) {
-				// reverse motion as if backing up with wheels turned to right
+				// reverse motion while pivoting/turning to the right
 				if (moveTurn > 0) {
-					setMotors(moveSpeed, -thisTurnSpeed);
+					setMotors(-thisTurnSpeed, moveSpeed);
 				}
 
-				// reverse motion as if backing up with wheels turned to left
+				// reverse motion while pivoting/turning to the left
 				else if (moveTurn < 0) {
 					setMotors(moveSpeed, -thisTurnSpeed);
 				}
