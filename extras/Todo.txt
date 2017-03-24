@@ -2,12 +2,9 @@ Todo's
  
 	Current items todo:
 	
-		Cleanup coarse and related.  
+				
+		finish PID tune instructions
 		
-			have to keep course.  maybe separate basic line follow tune or something?
-		
-		Update tunes to defines
-	
 	
 		Make more efficient to reduce size of library.
 		
@@ -24,7 +21,7 @@ Todo's
 				
 		Testing:
 		
-
+			Works OK now, but should test and determine if coarse tune variable/defines are best for all motor drivers
 
 			
 		Examples
@@ -38,13 +35,7 @@ Todo's
 		
 		PDF instructions/function manual to be created added to extras folder
 			Link to PDF instructions on github and/or website and local to library if possible. 
-			**** may only use function list example so easy access and simple copy/paste
-		
-		
-		In turnPID
-			Determine if need to override ki
-			Determine if using a portion of PV (currently %70) is best method or if formula needs to be adjusted
-			**** the current settings seem to be working well, probably leave both as is
+			**** may only use function list example so easy access and simple copy/paste			
 
 
 	Later Todo's
@@ -54,6 +45,9 @@ Todo's
 		Turn YR,YL (at y right/left) in drive/turn function
 
 		Refine turnPID.
+			Determine if need to override ki
+			Determine if using a portion of PV (currently %70) is best method or if formula needs to be adjusted
+			**** the current settings seem to be working well, probably leave both as is
 
 		serialPrintCurrentSettings does not show calSpeed unless after calibrateLineSensor(), but it is problematic to get that reading unless robot is actually calibrating on a board.
 			Possible improvement on serialPrintCurrentSettings to show calSpeed, but not if have to declare it outside of calibrateLineSensor().

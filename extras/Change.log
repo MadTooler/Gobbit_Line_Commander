@@ -1,5 +1,19 @@
 change log
 
+0.0.7
+	
+	Added video links to QTRtest and MotorDirTest
+	
+	Added GLC_DriveCompetition example and video link
+	
+	Added GLC_DetectLine example and video link
+	
+	Added GLC_FoundTurnFlags example and video link
+
+	Revised move() function to pivot/turn in direction of vector/turn strength value, regardless of forward or reverse velocity.
+		Also updated if the vector/turn strength is 100, which will be a spin action without forward/reverse motion, the absolute of the velocity value will be used.
+
+
 0.0.6
 
 	Change Log Started
