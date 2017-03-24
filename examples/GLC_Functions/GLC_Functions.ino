@@ -4,19 +4,22 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 02/24/2017
+*	Last edit 03/24/2017
 *	Released under GNU agreement
 */
 
 /*
-*	This is a reference list with notes, not an executable program.
+*   ** This is a reference list with notes, not an executable program. **
 *
-*	Functions and Variables are first all listed, then better explained further down.
+*   Functions and Variables are first all listed, then better explained further down.
 *
-*	Additional settings and information can be found in the library's "src" folder.
+*   Additional settings and information can be found in the library's "src" folder.
 *
+*   For assembly:  http://primalengineering.com/robots/Downloads/GBT-101-INSTR-R2_LineFollowAssemblyInstructions.PDF
 *
-*	For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots 
+*   For wiring:  http://primalengineering.com/robots/Downloads/Gobbit_LineFollowWiring_03222017.pdf
+*
+*   For additional programming, hardware, and other projects:  http://www.primalengineering.com/robots 
 *
 *
 *	Parts list:
@@ -34,7 +37,7 @@
 *				Pololu QTR-8RC RC Reflectance Sensor Array
 *
 *			  see: Zagros Robot Starter Kit - Gobbit
-*			       (http://www.zagrosrobotics.com/)
+*			       http://www.zagrosrobotics.com/
 *
 *		2) Black electrical tape line course on white background
 *
