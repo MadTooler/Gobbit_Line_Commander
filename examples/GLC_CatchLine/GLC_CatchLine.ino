@@ -1,4 +1,4 @@
-/* 02/25/2017
+/* 03/24/2017
  *  
  *  Using the Gobbit robot with line sensor on a single straight line
  *  course about 20" long.
@@ -9,6 +9,10 @@
  *   2) Veer right and continue until it intercepts the line again
  *   3) It will "Catch" the line and begin following again.
  *   4) Repeat
+ *
+ *   ** You may have to adjust the turn strength variable in the
+ *      MyBot.move(100,(adjust this value)); line to get your robot
+ *      to circle back to the line properly. **
  *   
 */
 
