@@ -1,9 +1,9 @@
 // GLC Simple obstacle avoidance WITH LED lit and piezo sensor impact target
-// 02/25/2017
+// 03/24/2017
 
 // If the Adafruit motor shield v2.3 is to be used...
 // UnComment the next line.
-#define ADAFRUIT_MS
+// #define ADAFRUIT_MS
 
 #define SONAR_PIN A3 // analog pin used for sensor 
 #define CLEARANCE_DISTANCE 12 // value in inches

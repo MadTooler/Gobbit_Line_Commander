@@ -2,15 +2,19 @@
 *  Gobbit Line Command Maze Solving example using "Left Hand Rule"
 *
 * Created by Jason Talley 
-* Last edit 02/24/2017
+* Last edit 03/24/2017
 * Released under GNU agreement
 */
 
 /*
-*  For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots 
+*  For assembly:  http://primalengineering.com/robots/Downloads/GBT-101-INSTR-R2_LineFollowAssemblyInstructions.PDF
+*
+*  For wiring:  http://primalengineering.com/robots/Downloads/Gobbit_LineFollowWiring_03222017.pdf
+*
+*  For additional programming, hardware, and other projects:  http://www.primalengineering.com/robots 
 *
 *
-* Parts list:
+*  Parts list:
 *
 *   1) Gobbit Robot with line following configuration
 *      Components:
@@ -25,7 +29,7 @@
 *       Pololu QTR-8RC RC Reflectance Sensor Array
 *
 *       see: Zagros Robot Starter Kit - Gobbit
-*            (http://www.zagrosrobotics.com/)
+*            http://www.zagrosrobotics.com/
 *
 *   2) Black electrical tape line course on white background
 *
