@@ -1,14 +1,20 @@
-#define SKETCH_VERSION "01282017a"
+#define SKETCH_VERSION "03222017a"
 /*
  *  QTR-8RC line sensor Testing sketch to determine correct wiring
  *  of sensor with the Gobbit robot chassis.
  *
- *  For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots 
+ *  For a video using this sketch: https://youtu.be/Y3DGQTP38wU
+ *
+ *  For assembly:  http://primalengineering.com/robots/Downloads/GBT-101-INSTR-R2_LineFollowAssemblyInstructions.PDF
+ *
+ *  For wiring:  http://primalengineering.com/robots/Downloads/Gobbit_LineFollowWiring_03222017.pdf
+ *
+ *  For additional programming, hardware, and other projects:  http://www.primalengineering.com/robots 
  *
  *	Parts list:
  *
  *		1) Gobbit Robot with line following configuration
- *		    Components:
+ *		    Components: 
  *				Gobbit Chassis with motors, switch, and battery holder
  *				Sparkfun Redboard (arduino uno clone)
  *				Motor shield
@@ -20,7 +26,7 @@
  *				Pololu QTR-8RC RC Reflectance Sensor Array
  *
  *			  see: Zagros Robot Starter Kit - Gobbit
- *			       (http://www.zagrosrobotics.com/)
+ *			       http://www.zagrosrobotics.com/
  *
  *		2) Black electrical tape line course on white background
  *
@@ -33,11 +39,15 @@
  *  To Use:
  *    1) Upload sketch to Arduino/Redboard.
  *    2) Run the Serial Monitor at 115200 baud with your Arduino/Redboard connected to your computer via USB.
- *    3) Place the robot on a lined track with the sensor over the line.
- *    4) Slowly wave the sensor over the line, keeping all the wheels of the robot touching or close to the track.
- *      a) The serial monitor should read __ at each sensor that does not see the line.
- *      b) The serial monitor should read -- where some line is partially seen.
- *      c) The serial monitor should read XX where the line can be fully seen.
+ *    3) Stand the robot up on the end with the ball caster, with the sensor facing away from you.  From this
+ *       perspective, the readout on the serial monitor will match left to right with the robot left/right.
+ *    4) Slowly wave your finger or a pencil/pen close to the sensor from side to side.
+ *      a) The serial monitor should read __ at each sensor that detects the IR light refleced from your finger.
+ *      b) The serial monitor should read -- where only some reflected light is detected.
+ *      c) The serial monitor should read XX where very little reflection is detected.
+ *      d) If it appears to be working properly, place the robot on your course.  
+ *         i) The sensors over the line should read XX since it is black and does not reflect much light.
+ *         ii) The sensors over the white of the course should read __ since the white reflects a lot of light.
  *    5) If your readings do not match what you would expect:
  *      a) Unplug the robot
  *      b) Check your wiring and fix any errors.

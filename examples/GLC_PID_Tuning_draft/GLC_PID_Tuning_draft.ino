@@ -1,7 +1,7 @@
 // PID line following tuning using the Gobbit Line Command library
 // and Gobbit robot.
 //
-// 02/25/2017 initial draft, missing aggrssive/coarse tuning instructions.
+// 03/24/2017 rough draft, missing aggressive/coarse tuning instructions.
 
 // #define ADAFRUIT_MS if the Adafruit motor shield v2.3 is to be used.
   // M1 and M2 will be used.  Right motor on M1, Left on M2.
@@ -20,7 +20,11 @@
  *  poster board (about 22" x 28") with lines kept 5" from the edge of the poster board.
  *  See: http://www.instructables.com/id/Line-following-Robot-with-Arduino/?ALLSTEPS
  *
- *  For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots 
+ *  For assembly:  http://primalengineering.com/robots/Downloads/GBT-101-INSTR-R2_LineFollowAssemblyInstructions.PDF
+ *
+ *  For wiring:  http://primalengineering.com/robots/Downloads/Gobbit_LineFollowWiring_03222017.pdf
+ *
+ *  For additional programming, hardware, and other projects:  http://www.primalengineering.com/robots 
  *
  *  Parts list:
  *
@@ -37,7 +41,7 @@
  *       Pololu QTR-8RC RC Reflectance Sensor Array
  *
  *       see: Zagros Robot Starter Kit - Gobbit
- *            (http://www.zagrosrobotics.com/)
+ *            http://www.zagrosrobotics.com/
  *
  *   2) Black electrical tape line course on white background
  *

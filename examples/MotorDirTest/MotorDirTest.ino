@@ -1,9 +1,15 @@
-#define SKETCH_VERSION "01282017a"
+#define SKETCH_VERSION "03242017a"
 /*
  *  Motor Direction Testing sketch to determine correct wiring
  *  of Left and Right gear motors with the Gobbit robot chassis.
  *
- *  For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots 
+ *  For a video using this sketch: https://youtu.be/5EnlZLv1E80
+ *
+ *  For assembly:  http://primalengineering.com/robots/Downloads/GBT-101-INSTR-R2_LineFollowAssemblyInstructions.PDF
+ *
+ *  For wiring:  http://primalengineering.com/robots/Downloads/Gobbit_LineFollowWiring_03222017.pdf
+ *
+ *  For additional programming, hardware, and other projects:  http://www.primalengineering.com/robots 
  *
  *	Parts list:
  *
@@ -20,7 +26,7 @@
  *				Pololu QTR-8RC RC Reflectance Sensor Array
  *
  *			  see: Zagros Robot Starter Kit - Gobbit
- *			       (http://www.zagrosrobotics.com/)
+ *			       http://www.zagrosrobotics.com/
  *
  *		2) Black electrical tape line course on white background
  *

@@ -1,5 +1,5 @@
 // Gobbit Line Command Simple obstacle avoidance 
-// with the Gobbit and a Maxbotics EZ-0 ultrasonic sensor
+// with the Gobbit and a Maxbotics EZ-0 or EZ-1 ultrasonic sensor
 
 // If the Adafruit motor shield v2.3 is to be used...
   // M1 and M2 terminals will be used.  Right motor on M1, Left on M2.
