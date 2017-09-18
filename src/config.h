@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h - library variables for the Gobbit robot
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 02/12/2017
+*	Last edit 09/18/2017
 *	Released under GNU agreement
 */
 
@@ -11,7 +11,7 @@
 
 	// line sensor defines/constants
 	#define NUM_SENSORS   8     // number of sensors used
-	#define TIMEOUT       2500  // waits for 2500 microseconds for sensor outputs to go low (2.5 milleseconds)
+	#define TIME_OUT       2500  // waits for 2500 microseconds for sensor outputs to go low (2.5 milleseconds)
 	#define EMITTER_PIN   QTR_NO_EMITTER_PIN  // emitter control pin not used.  If added, replace QTR_NO_EMITTER_PIN with pin#
 	
 	// Cutoff time in milliseconds to stop sensing for intersection if the end of the intersection has not been found.
@@ -34,7 +34,12 @@
 	#define BRAKING_TIME	30
 	
 	// Conversion multiplier to convert analog range reading of sonar sensor to inches
-	// Current value is correct for the MaxBotics EZ-0 ultrasonic distance sensor
+	// Current value is suitable for the MaxBotics EZ-0 and EZ-1 ultrasonic distance sensor on smooth surfaces for near collision detection.
 	#define SONAR_CONVERSION_FACTOR 0.497
+	
+	// Enable use of Servo functions ("true" or 1 enables, "false" or 0 disables).
+	// Initial purpose of setting "false" is for where the required TIMER1 that servo.h use could be in conflict with some other libraries.
+	// Disabling will also conserve memory and compile time.
+	#define SERVO_ENABLE true
 	
 #endif
