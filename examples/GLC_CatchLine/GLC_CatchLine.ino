@@ -34,7 +34,7 @@ void setup() {
   MyBot.beginGobbit();
 
   // calibrate the line sensor on the line
-  MyBot.calibrateLineSensor(0);   
+  MyBot.calibrateLineSensor();   
 }
 
 

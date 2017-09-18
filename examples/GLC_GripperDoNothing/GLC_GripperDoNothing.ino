@@ -1,4 +1,4 @@
-/* 02/02/2017
+/* 09/18/2017
  *  
  *  Using the Gobbit robot with line sensor and gripper on pin A0, 
  *  on a simple line course with a 90 degree X where an object is at
@@ -29,6 +29,8 @@
  *   7) Stop at the end of the line (or any found intersection)
  *   8) Open the gripper to release the something
  *   9) Backup a little away from the something
+ *
+ *  To see a video using this sketch:  https://youtu.be/ap2OHx_hRoU?list=PLawtTl1V11Fz_OZYQnIneA7F-aO4kcc6E
  *   
 */
 
@@ -44,6 +46,9 @@ GobbitLineCommand MyBot;
 
 void setup() {
   
+  // load default tuning values for battery voltage 
+  MyBot.setBatteryVolts(9);
+  
   // attaches the servo on pin 14 which is A0 and sets the angles for Open and Closed Postions
   MyBot.setGripPinOpenClosed(A0,180,70);  
  
@@ -54,7 +59,7 @@ void setup() {
   MyBot.gripOpen();
 
   // calibrate the line sensor on the line
-  MyBot.calibrateLineSensor(0); 
+  MyBot.calibrateLineSensor(); 
 
   // Start move begins from the leg of X with no object, 
   // with the robot facing middle of X.

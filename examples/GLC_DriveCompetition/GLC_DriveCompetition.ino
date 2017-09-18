@@ -1,4 +1,4 @@
-/* 03/24/2017
+/* 09/18/2017
  *  
  *  Using the Gobbit robot with line sensor on a course with multiple turns
  *  between a start and end point...  
@@ -36,10 +36,12 @@
 GobbitLineCommand MyBot;
 
 void setup() {
+	
+  MyBot.setBatteryVolts(9);
 
   MyBot.beginGobbit();
 
-  MyBot.calibrateLineSensor(0);
+  MyBot.calibrateLineSensor();
 
 }
 

@@ -4,7 +4,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 03/24/2017
+*	Last edit 09/18/2017
 *	Released under GNU agreement
 */
 
@@ -107,7 +107,8 @@ MyBot.catchLine();
 byte isItFound = MyBot.detectLine('L');
 MyBot.move(100, 0); 
 MyBot.setMotors(100, 100); 
-MyBot.brakeMotors(100);
+MyBot.brakeMotors();
+MyBot.brakeMotors(100, 'B');
 MyBot.backup(100,500);
 MyBot.gripOpen();
 MyBot.gripClose();
@@ -346,11 +347,16 @@ MyBot.move(100, 0);
 //    0 stopped 
 MyBot.setMotors(100, 100); 
 
-// Brake motors by a quick reversal of motors to stop motion.  
-// Receives an int value as a percentage of the BRAKING_TIME milliseconds (see config.h). 
-//   0% to 200%.
-MyBot.brakeMotors(100);
+// Brake motors basic function without any arguments. 
+// Uses current motor directions to determine direction and make a quick reversal of motors to stop motion. 
+MyBot.brakeMotors();
 
+// Brake motors expanded function by a quick reversal of motors to stop motion in the declared direction. 
+// Receives an int value as a percentage of the BRAKING_TIME milliseconds, and direction of reversal as character 
+//   0% to 200% percentage
+//   'F'orward, 'B'ackward, 'R'ight, 'L'eft, 'A'uto ... direction is intended as the opposite of the current direction of motion 
+MyBot.brakeMotors(100,'B');
+		
 // Backup with declared speed (100 max) and for a period of milliseconds.
 // This function is intended to be used with the drive() function and expected
 // with the gripper as a method to clear the gripper from objects.

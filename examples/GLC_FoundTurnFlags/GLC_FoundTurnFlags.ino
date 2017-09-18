@@ -1,4 +1,4 @@
-/* 03/24/2017
+/* 09/18/2017
 
     Using the Gobbit robot with line sensor on a course with an "h" shaped path
     similar to this:
@@ -48,9 +48,11 @@ GobbitLineCommand MyBot;
 
 void setup() {
 
+  MyBot.setBatteryVolts(9);
+
   MyBot.beginGobbit();
 
-  MyBot.calibrateLineSensor(0);
+  MyBot.calibrateLineSensor();
 
   // since we only want to run this once, we will keep it all in the setup()
   

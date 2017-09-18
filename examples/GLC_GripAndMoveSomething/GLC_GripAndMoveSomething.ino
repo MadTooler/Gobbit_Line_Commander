@@ -1,4 +1,4 @@
-/* 02/25/2017
+/* 09/18/2017
  *  
  *  Using the Gobbit robot with line sensor and gripper on pin A0, this program will...
  *  
@@ -24,6 +24,9 @@ GobbitLineCommand MyBot;
 
 void setup() {
   
+  // load default tuning values for battery voltage 
+  MyBot.setBatteryVolts(9);
+  
   // attaches the servo on pin 14 which is A0 and sets the angles for Open and Closed Postions
   MyBot.setGripPinOpenClosed(A0,180,70);  
  
@@ -34,7 +37,7 @@ void setup() {
   MyBot.gripOpen();
 
   // calibrate the line sensor on the line
-  MyBot.calibrateLineSensor(0); 
+  MyBot.calibrateLineSensor(); 
 
 }
 

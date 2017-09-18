@@ -1,4 +1,4 @@
-/*  12/24/2016
+/*  09/18/2017
  *  
  *  This program will help you setup and test the gripper with the Gobbit robot.
  *  We will use the GobbitLineCommand library, but you can also directly
@@ -13,6 +13,8 @@
  *    Repeat
  *    
  *  Read the comments at each step below to determine if your gripper is properly setup.
+ *
+ *  To see a video using this sketch:  https://youtu.be/Hh2pGYhL6_o?list=PLawtTl1V11Fz_OZYQnIneA7F-aO4kcc6E&t=62
  *  
 */
 
