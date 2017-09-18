@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 03/24/2017
+*	Last edit 09/18/2017
 *	Released under GNU agreement
 */
 
@@ -37,8 +37,6 @@
 
 #include <Arduino.h>
 
-#include <Servo.h>
-
 //QTRSensors library must be loaded to your arduino libraries folder.
 // Easiest to use the library manager to install
 // later releases may be able to auto load if this library is made accessible in arduino library manager.
@@ -49,8 +47,17 @@
 #include "AdafruitMSDefaults.h"
 #include "ArdumotoDefaults.h"
 
+
+#if SERVO_ENABLE
+	#include <Servo.h>
+
+	// object for the gripper servo
+	Servo gripper;
+#endif
+
 // load Adafruit Motor Shield library and initialize objects
-// NOTE cannot access USE_AFMS or status of ADAFRUIT_MS from main sketch for conditinal loading of AFMS library.
+//     NOTE cannot access USE_AFMS or status of ADAFRUIT_MS from main sketch for conditinal loading of AFMS library.
+//     This is a limitation of the arduino IDE compiler, and it does not appear to be adopted in the future.
 #include <Adafruit_MotorShield.h>
 
 // #define ADAFRUIT_MS in main program if the Adafruit motor shield v2.3 is to be used.
@@ -73,8 +80,6 @@ Adafruit_DCMotor* leftMotor = AFMS.getMotor(2);
 // line sensor object
 QTRSensorsRC qtrrc;
 
-// object for the gripper servo
-Servo gripper;
 
 // Initializes the sensor and motors.  
 // Call in setup loop.  
@@ -84,7 +89,7 @@ void GobbitLineCommand::beginGobbit(void)
 {
 
 	// initialize sensor
-	qtrrc.init(sensorPins, NUM_SENSORS, TIMEOUT, EMITTER_PIN);
+	qtrrc.init(sensorPins, NUM_SENSORS, TIME_OUT, EMITTER_PIN);
 	delay(500); // give sensors time to set
 
 	if (volts == NOT_SET) {
@@ -306,6 +311,20 @@ void GobbitLineCommand::beginGobbit(void)
 
 }
 
+
+
+//-----------------
+// Run a calibration of the line sensor by sweeping back and forth 
+// over a line at the called speed between 0-100.
+//   Speed must be a 0 or positive value
+//   0 will load the default values based upon voltage if declared.
+void GobbitLineCommand::calibrateLineSensor(void)
+{
+	calibrateLineSensor(0);
+}
+
+
+
 //-----------------
 // Run a calibration of the line sensor by sweeping back and forth 
 // over a line at the called speed between 0-100.
@@ -343,15 +362,18 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 	// read calibrated sensor values and obtain a measure of the line position from 0 to 7000
 	linePosition = qtrrc.readLine(sensorValues);
 
-	// read the value of only a single sensor to see the line.
+
+ 	// read the value of only a single sensor to see the line.
 	// when the value is greater than 200 the sensor sees the line.
 	while (sensorValues[7] < 200) // wait for outer line sensor to see line
 	{
 		linePosition = qtrrc.readLine(sensorValues);
 	}
 
+	/* **** was using this prior, but forced setting both calSpeed and turnSpeedLow if needed to adjust process.
 	// slow down speed
-	setMotors(-turnSpeedLow, turnSpeedLow);
+	setMotors(-turnSpeedLow, turnSpeedLow);   */
+	
 
 	// make sure outer sensor is no longer over line
 	while (sensorValues[7] > 190) // wait for outer most sensor to exit the line
@@ -365,8 +387,8 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 		linePosition = qtrrc.readLine(sensorValues);
 	} 
 
-	//stop both motors with braking
-	brakeMotors(100); 
+	//stop both motors with braking to the right (opposite the current left turning)
+	brakeMotors(100,'R'); 
 		
 	// delay as indicator setup and calibration is complete
 	delay(1000);
@@ -423,7 +445,7 @@ void GobbitLineCommand::drive(char turnDir)
 			
 			if(foundLeft || foundRight || foundForward || foundEnd) {
 
-				brakeMotors(brakeStrength);
+				brakeMotors(brakeStrength,'B');
 			
 				// make sure brake flag is now off in case the previous drive command was forward
 				brakeNext = 0;
@@ -690,7 +712,7 @@ void GobbitLineCommand::turn(char dir)
 	// brake the motors if running faster than brakeSpeed value
 	if (RmotorSpeed > brakeSpeed || LmotorSpeed > brakeSpeed || brakeNext) 
 		// stop motors with full braking
-		brakeMotors(brakeStrength);
+		brakeMotors(brakeStrength,'A');
 		
 	else // stop both motors
 		setMotors(0, 0);
@@ -730,55 +752,8 @@ void GobbitLineCommand::turn(char dir)
 			}
 			i--;
 		}
-		
-		// ****this is the first attempt at PID turn stopping.
-		// it does work, but the tuning is difficult with the current setup.
-		// It needs further improvement and testing to confirm old system is not better.
-		// There is also a significant difference in use with ardumoto than adafruit motorshield.
-		
-		turnPID();
 			
- 
-		
-		
-		// ****this is the previous method
-		/* linePosition = qtrrc.readLine(sensorValues);
-
-		while (sensorValues[7] < 200) // wait for outer most sensor to find the line
-		{
-			beepCycle();
-
-			linePosition = qtrrc.readLine(sensorValues);
-		}
-
-		// slow down speed to soften turn
-		setMotors(-turnSpeedLow, turnSpeedLow);
-
-		// make sure outer sensor is no longer over line
-		while (sensorValues[7] > 190) // wait for outer most sensor to exit the line
-		{
-			beepCycle();
-
-			linePosition = qtrrc.readLine(sensorValues);
-		}
-
-		// find center
-		while (linePosition > (3500))// wait for line position to find near center
-		{
-			beepCycle();
-
-			linePosition = qtrrc.readLine(sensorValues);
-		} 
-
-		// stop both motors
-		//setMotors(0, 0);
-		
-		// stop motors with full braking
-		if(turnSpeedHigh>brakeSpeed)
-			brakeMotors();
-		else setMotors(0, 0);
-		
-		break;  */
+		turnPID();
 	}
 	
 
@@ -806,11 +781,6 @@ void GobbitLineCommand::turn(char dir)
 			linePosition = qtrrc.readLine(sensorValues);
 		}
 
-		// ****this is the first attempt at PID turn stopping.
-		// it does work, but the tuning is difficult with the current setup.
-		// It needs further improvement and testing to confirm old system is not better.
-		// There is also a significant difference in use with ardumoto than adafruit motorshield.
-		
 			
 		turnPID();	
 			
@@ -892,33 +862,20 @@ void GobbitLineCommand::turnPID(void)
 		}
 		else keepTurning = 0;
 
-		
-		// ****problematic with normal lineFollow PID and PIDcoarse values since here motors are always runing opposite directions of eachother.
-		// ****Further test/tune to determine how should be used or not.
-		// 
-		// Determine how great error is and set kp and kd aggressive if needed
-		//if (abs(error) > 3500 * PDfineRange) {
-		//	kpCurrent = _kpCoarse;
-		//	kiCurrent = _kiCoarse;
-		//	kdCurrent = _kdCoarse;
-	//	} 
-	//	else {
-			
-			// adjust the PID values per motor shield.
-			// these values were created by tuning and testing.
-			if(useAFMS){
-				kpCurrent = _kp / 5;
-				kiCurrent = _ki * 3;
-				kdCurrent = _kd;
-			}
-			else{
-				kpCurrent = _kp / 10;
-				kiCurrent = _ki * 1.5;
-				kdCurrent = _kd * 1.25;
-			}
+				
+		// adjust the PID values per motor shield.
+		// these values were created by tuning and testing.
+		if(useAFMS){
+			kpCurrent = _kp / 5;
+			kiCurrent = _ki * 3;
+			kdCurrent = _kd;
+		}
+		else{
+			kpCurrent = _kp / 10;
+			kiCurrent = _ki * 1.5;
+			kdCurrent = _kd * 1.25;
+		}
 
-	//	}
-		
 		// make sure the ki value is not 0
 		// This needs the ki value.  If PID is manually changed to 0 value, a minimal value will
 		// be added here to make sure the turn is completed.
@@ -1115,57 +1072,63 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 	
 } // end move function
 
-//-----------------
-// Setup for the gripper servo.
-// Pin#
-// Open position in degrees, 0-180
-// Closed position in degrees, 0-180
-void GobbitLineCommand::setGripPinOpenClosed(int pin, int open, int closed)
-{
-	// set pin mode for gripper servo
-	pinMode(pin, OUTPUT);
 
-	gripPin = pin; // only used as flag and feedback for serialPrintCurrentSettings
-	gripOpenAngle = open;
-	gripClosedAngle = closed;
+#if SERVO_ENABLE
 
-	// attaches the servo on pin declared
-	gripper.attach(pin);
-}
+	//-----------------
+	// Setup for the gripper servo.
+	// Pin#
+	// Open position in degrees, 0-180
+	// Closed position in degrees, 0-180
+	void GobbitLineCommand::setGripPinOpenClosed(int pin, int open, int closed)
+	{
+		// set pin mode for gripper servo
+		pinMode(pin, OUTPUT);
 
-//-----------------
-// Closes the gripper to the closed angle that was declared with setGripPinOpenClosed
-void GobbitLineCommand::gripClose(void)
-{
-	// close gripper
-	gripper.write(gripClosedAngle);
-	delay(700);
-}
+		gripPin = pin; // only used as flag and feedback for serialPrintCurrentSettings
+		gripOpenAngle = open;
+		gripClosedAngle = closed;
 
-//-----------------
-// Opens the gripper to the open angle that was declared with setGripPinOpenClosed
-void GobbitLineCommand::gripOpen(void)
-{
-	// open gripper
-	gripper.write(gripOpenAngle);
-	delay(700);
-}
+		// attaches the servo on pin declared
+		gripper.attach(pin);
+	}
 
 
-//-----------------
-// Opens the gripper to the declared open percent
-//   0 is same as closed
-//   100 is same as fully open
-void GobbitLineCommand::gripPercentOpen(int openPercent)
-{
-	
-	openPercent = constrain(openPercent, 0, 100);
+	//-----------------
+	// Closes the gripper to the closed angle that was declared with setGripPinOpenClosed
+	void GobbitLineCommand::gripClose(void)
+	{
+		// close gripper
+		gripper.write(gripClosedAngle);
+		delay(700);
+	}
 
-	// set gripper angle to position percent open
-	int angle = (((abs(gripOpenAngle - gripClosedAngle)) * openPercent) / 100) + gripClosedAngle;
-	gripper.write(angle);
-	delay(700);
-}
+	//-----------------
+	// Opens the gripper to the open angle that was declared with setGripPinOpenClosed
+	void GobbitLineCommand::gripOpen(void)
+	{
+		
+		// open gripper
+		gripper.write(gripOpenAngle);
+		delay(700);
+	}
+
+
+	//-----------------
+	// Opens the gripper to the declared open percent
+	//   0 is same as closed
+	//   100 is same as fully open
+	void GobbitLineCommand::gripPercentOpen(int openPercent)
+	{
+		openPercent = constrain(openPercent, 0, 100);
+
+		// set gripper angle to position percent open
+		int angle = (((abs(gripOpenAngle - gripClosedAngle)) * openPercent) / 100) + gripClosedAngle;
+		gripper.write(angle);
+		delay(700);
+	}
+
+#endif
 
 
 //-----------------
@@ -1267,7 +1230,7 @@ void GobbitLineCommand::checkBattery(int analogPin, float minVoltage, float smal
 {
 
 	// if voltage is below cutoff voltage, flash the onboard LED on pin 13 fast and do not run anything else
-	if (readBatteryVolts(analogPin, smallResK, largeResK) < minVoltage)
+	if (readBatteryVolts(analogPin, smallResK, largeResK) < minVoltage){
 		while (1) // if using Lipo batteries, 3.25 per cell would be conservatively safe.
 		{
 			setMotors(0, 0);
@@ -1281,6 +1244,7 @@ void GobbitLineCommand::checkBattery(int analogPin, float minVoltage, float smal
 			//Serial.println("Battery Voltage");
 			//Serial.println("");
 		}
+	}
 }
 
 //-----------------
@@ -1367,7 +1331,7 @@ void GobbitLineCommand::setPIDfineRange(float fineRange)
 // Sets pins for the QTR-8RC sensor, if default are not to be used.
 // All 8 sensors need to be used for this library
 // MUST BE RUN BEFORE QTR IS INITIALIZED, OR BEFORE THE beginGobbit() is run in setup
-void GobbitLineCommand::setQTRpins(int pin1, int pin2, int pin3, int pin4, int pin5, int pin6, int pin7, int pin8)
+void GobbitLineCommand::setQTRpins(unsigned char pin1, unsigned char pin2, unsigned char pin3, unsigned char pin4, unsigned char pin5, unsigned char pin6, unsigned char pin7, unsigned char pin8)  //(int pin1, int pin2, int pin3, int pin4, int pin5, int pin6, int pin7, int pin8)
 {
 
 	unsigned char qtrPins[] = { pin1, pin2, pin3, pin4, pin5, pin6, pin7, pin8 };
@@ -1526,19 +1490,22 @@ void GobbitLineCommand::serialPrintCurrentSettings(void)
 		Serial.println("Sonar Range Finder is Disabled.");
 	Serial.println();
 
-	if (gripPin != NOT_SET) {
-		Serial.println("Gripper is Enabled.");
-		Serial.print(gripPin);
-		Serial.println("   Input Pin");
-		Serial.print(gripOpenAngle);
-		Serial.println("   Open Angle");
-		Serial.print(gripClosedAngle);
-		Serial.println("   Closed Angle");
-	}
-	else
-		Serial.println("Gripper is Disabled.");
-	Serial.println();
-
+	#if SERVO_ENABLE
+		if (gripPin != NOT_SET) {
+			Serial.println("Gripper is Enabled.");
+			Serial.print(gripPin);
+			Serial.println("   Input Pin");
+			Serial.print(gripOpenAngle);
+			Serial.println("   Open Angle");
+			Serial.print(gripClosedAngle);
+			Serial.println("   Closed Angle");
+		}
+		else
+			Serial.println("Gripper is Disabled.");
+		Serial.println();
+	#endif
+	
+	
 	if (beepPin != NOT_SET) {
 		Serial.println("Beeper is enabled.");
 		Serial.print(beepPin);
@@ -1713,11 +1680,23 @@ void GobbitLineCommand::setMotors(float leftVelocity, float rightVelocity)
 
 }
 
+
+
 //-----------------
-// Brake motors by a quick reversal of motors to stop motion.  
-// Receives an int value as a percentage of the BRAKING_TIME milliseconds. 
-//   0% to 200%.
-void GobbitLineCommand::brakeMotors(int bStrength)
+// Brake motors with Auto choice of strength and direction by a quick reversal of motors to stop motion.  
+void GobbitLineCommand::brakeMotors(void)
+{
+	brakeMotors(100,'A');
+}
+
+	
+
+//-----------------
+// Brake motors expanded function by a quick reversal of motors to stop motion in the declared direction. 
+// Receives an int value as a percentage of the BRAKING_TIME milliseconds, and direction of reversal as character 
+//   0% to 200% percentage
+//   'F'orward, 'B'ackward, 'R'ight, 'L'eft, 'A'uto ... direction is intended as the opposite of the current direction of motion
+void GobbitLineCommand::brakeMotors(int bStrength,char direction)
 {
 	
 	bStrength = constrain(bStrength, 0, 200);
@@ -1726,8 +1705,68 @@ void GobbitLineCommand::brakeMotors(int bStrength)
 	int brakeTime = (BRAKING_TIME * bStrength)/100;
 
 	// brake both motors
+
+	if(direction == 'A'){
+
+		// if turning/spinning left then set direction of braking to right
+		if(LmotorSpeed<0  && RmotorSpeed>0)
+			direction ='R';
+		
+		// if turning/spinning right then set direction of braking to the left
+		else if(LmotorSpeed>0  && RmotorSpeed<0)
+			direction ='L';
+
+		
+		// if moving in reverse then set direction of braking to forward
+		else if(LmotorSpeed<0)
+			direction ='F';
+		
+		// then must be moving forward then set direction of braking to backward
+		else 
+			direction ='B';
+	}
 	
- 	// if turning/spinning left
+	switch (direction){
+
+		case 'R': // brake by reversing to the right
+			setMotors(100, -100);
+			
+			// using half the time that is used for straight travels
+			delay(brakeTime/2);	  
+			break;
+     
+		case 'L': // brake by reversing to the left
+			setMotors(-100, 100);
+			
+			// using half the time that is used for straight travels
+			delay(brakeTime/2);	  
+			break;
+			
+		case 'F': // brake by reversing forward
+  			setMotors(100, 100);
+
+			delay(brakeTime);
+				
+			// brake right motor a little longer
+			//setMotors(0, 100);
+			//delay(5);
+			break;	
+
+		case 'B': // brake by reversing backwards/reverse
+  			setMotors(-100, -100);
+
+			delay(brakeTime);
+			
+			// brake left motor a little longer
+			setMotors(-100, 0);
+			delay(5);
+			break;
+
+	}
+	
+/*  Prior version with only the auto mode and percent of brake time
+	
+	// if turning/spinning left
 	if(LmotorSpeed<0  && RmotorSpeed>0){
 		setMotors(100, -100);
 		
@@ -1763,24 +1802,9 @@ void GobbitLineCommand::brakeMotors(int bStrength)
 		// brake left motor a little longer
 		setMotors(-100, 0);
 		delay(5);
-	}  
-
-	// test hammering/antilock style braking
-	// This is softer, but just about as well to use brakeStrength, which is also simpler
-/* 	else {
-		for(int h =0; h<brakeTime; h=h+8){
-			setMotors(-100, -100);
-
-			delay(7);
-			setMotors(-0, -0);
-			delay(1);
-		}
-
-		// brake left motor a little longer
-		setMotors(-100, 0);
-		delay(5);
-	}  */
+	}   */
 	
+
 	// stop both motors
 	setMotors(0, 0);
 }
@@ -1834,7 +1858,7 @@ void GobbitLineCommand::beepCycle(void)
 			setMotors(0, 0);
 
 			// beep for count and length
-			int i = 0;
+			unsigned int i = 0;
 			while (i < beepCount) {
 				digitalWrite(beepPin, HIGH);
 				delay(beepLength);
