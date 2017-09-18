@@ -1,7 +1,7 @@
 // PID line following tuning using the Gobbit Line Command library
 // and Gobbit robot.
 //
-// 03/24/2017 rough draft, missing aggressive/coarse tuning instructions.
+// 09/18/2017 rough draft, missing aggressive/coarse tuning instructions.
 
 // #define ADAFRUIT_MS if the Adafruit motor shield v2.3 is to be used.
   // M1 and M2 will be used.  Right motor on M1, Left on M2.
@@ -10,7 +10,7 @@
   // based upon the L298 driver.  The default pin settings will be used 
   // except where new values have been declared.
   // UnComment the next line if you are using the Adafruit shield
-#define ADAFRUIT_MS 
+//#define ADAFRUIT_MS 
 
 /*
  *  Line follow PD tuning directions for the Gobbit robot chassis.

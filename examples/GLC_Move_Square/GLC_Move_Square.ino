@@ -1,6 +1,6 @@
+// 02/25/2017
 // Example moving in a square path using the Gobbit Line Command library
 // with move() motor commands and no sensors.
-// 02/25/2017
 
 
 // If the Adafruit motor shield v2.3 is to be used...

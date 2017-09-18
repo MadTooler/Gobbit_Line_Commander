@@ -2,7 +2,7 @@
 *  Gobbit Line Command Maze Solving example using "Left Hand Rule"
 *
 * Created by Jason Talley 
-* Last edit 03/24/2017
+* Last edit 09/18/2017
 * Released under GNU agreement
 */
 
@@ -71,7 +71,7 @@ void setup() {
   // Start the GLC with declared and/or default settings
   MyBot.beginGobbit();
 
-  MyBot.calibrateLineSensor(0);
+  MyBot.calibrateLineSensor();
 }
 
 
@@ -123,7 +123,7 @@ void MazeSolve()
     //  back on the starting line.
     
     // Stop both motors quickly with motor braking (quick reversal of direction)
-    MyBot.brakeMotors(100);
+    MyBot.brakeMotors(100, 'B');
 
     // Do nothing while robot is sitting past the end mark on the white of the course, 
     // waiting to be picked up.
