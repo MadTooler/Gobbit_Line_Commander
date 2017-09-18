@@ -1,5 +1,16 @@
 change log
 
+0.0.8
+
+	Created line to disable the internal call for the servo library, functions, and variables, if not needed, or if causing a conflict.
+		see in config.h file : #define SERVO_ENABLE TRUE
+		
+	Added basic auto mode and advanced mode of brakeMotors().  The prior format is no longer.
+	
+	Added basic auto mode calibrateLineSensor() that does not require an argument.
+	
+	Removed turnSpeedLow section of calibrateLineSensor so only the calSpeed will be used.
+
 0.0.7
 	
 	Added video links to QTRtest and MotorDirTest

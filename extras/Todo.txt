@@ -1,9 +1,6 @@
 Todo's
  
 	Current items todo:
-	
-				
-		finish PID tune instructions
 		
 	
 		Make more efficient to reduce size of library.
@@ -18,6 +15,9 @@ Todo's
 			Go over variable types and usage and reduce memory usage where possible.
 				Note some small values that are declared int or float values need to stay that type for math formulas to work properly or for errant values at function calls.
 				
+			Determine if should use progmem for serial print or not.  the "(F ... )" f macro makes it happen.  Uses very tiny % of progmem vs a ton of ram.
+				Serial.print(F("text in here is now stored in progmem instead of ram"))
+				
 				
 		Testing:
 		
@@ -31,6 +31,8 @@ Todo's
 		
 		
 			Light and Servo Targets
+			
+			Add Video links to remaining (new videos are needed first).
 			
 		
 		PDF instructions/function manual to be created added to extras folder
@@ -58,6 +60,7 @@ Todo's
 		Make loading Adafruit Motor Shield V2 Library conditional, if possible.  
 			It may not be possible without requiring maybe the config.h files defines to be modded with an adafruit_ms then add ifdefs.
 			Not sure it can be done another way.
+			Possibly update examples to have a define at top for both ardumoto and adafruit if can make either conditional in library.
 
 		Determine if should, then make beepCycle a WDT (watch dog timer) or other wakeup timer interrupt and remove all the calls.
 			Would be nice, but probably not a good idea since this would be very board specific and have possible conflict issues with other libraries and functions.
@@ -70,7 +73,8 @@ Todo's
 			
 		Barcode reading?  Similar to findMark process, but a bit more challenging.  
 			**** probably not since this may be too heavy for the library that is already big.
-			
+		
+		Maybe make delay optional somehow for gripper open/close calls?		
 
 			
 	General House cleaning to do before publishing new releases:
