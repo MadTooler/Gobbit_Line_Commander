@@ -1,16 +1,17 @@
 // PID line following tuning using the Gobbit Line Command library
 // and Gobbit robot.
 //
-// 09/18/2017 rough draft, missing aggressive/coarse tuning instructions.
+// 10/28/2017 rough draft, missing aggressive/coarse tuning instructions.
 
-// #define ADAFRUIT_MS if the Adafruit motor shield v2.3 is to be used.
-  // M1 and M2 will be used.  Right motor on M1, Left on M2.
-  // No define will default to Sparkfun Ardumoto or other makes of Dir 
-  // and PWM pin driven style drivers similar to the Ardumoto and those
-  // based upon the L298 driver.  The default pin settings will be used 
-  // except where new values have been declared.
-  // UnComment the next line if you are using the Adafruit shield
-//#define ADAFRUIT_MS 
+// Choose your Motor Driver...
+// To load default settings for either an Ardumoto version 14 or 20, or an Adafruit v2.3,
+// uncomment only the following motor driver define that matches.
+// If none are uncommented, Ardumoto v14 values will be used.
+//
+// DO NOT UNCOMMENT MORE THAN ONE
+//#define ARDUMOTO_14
+//#define ARDUMOTO_20  
+//#define ADAFRUIT_MS
 
 /*
  *  Line follow PD tuning directions for the Gobbit robot chassis.

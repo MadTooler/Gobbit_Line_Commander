@@ -4,7 +4,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 09/18/2017
+*	Last edit 10/28/2017
 *	Released under GNU agreement
 */
 
@@ -45,14 +45,19 @@
 */
 
 
-// #define ADAFRUIT_MS if the Adafruit motor shield v2.3 is to be used.
+// Choose your Motor Driver...
+// To load default settings for either an Ardumoto version 14 or 20, or an Adafruit v2.3,
+// uncomment only the following motor driver define that matches.
+// If none are uncommented, it will default to Sparkfun Ardumoto v14 which is a Dir 
+//   and PWM pin driver style driver based upon the L298 driver.  The default pin settings 
+//   will be used except where new values have been declared.
+// If the Adafruit motor shield v2.3 is to be used,
 //   M1 and M2 will be used.  Right motor on M1, Left on M2.
-//   No define will default to Sparkfun Ardumoto or other makes of Dir 
-//   and PWM pin driven style drivers similar to the Ardumoto and those
-//   based upon the L298 driver.  The default pin settings will be used 
-//   except where new values have been declared.
-//   UnComment the next line if you are using the Adafruit shield
-//#define ADAFRUIT_MS 
+//
+// DO NOT UNCOMMENT MORE THAN ONE
+//#define ARDUMOTO_14
+//#define ARDUMOTO_20  
+//#define ADAFRUIT_MS
 
 // include the library in the header of the sketch.
 #include <GobbitLineCommand.h>

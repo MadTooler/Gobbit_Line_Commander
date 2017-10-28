@@ -1,13 +1,13 @@
-#define SKETCH_VERSION "03242017a"
+#define SKETCH_VERSION "10282017a"
 /*
  *  Motor Direction Testing sketch to determine correct wiring
  *  of Left and Right gear motors with the Gobbit robot chassis.
  *
  *  For a video using this sketch: https://youtu.be/5EnlZLv1E80
  *
- *  For assembly:  http://primalengineering.com/robots/Downloads/GBT-101-INSTR-R2_LineFollowAssemblyInstructions.PDF
+ *  For assembly:  http://primalengineering.com/robots
  *
- *  For wiring:  http://primalengineering.com/robots/Downloads/Gobbit_LineFollowWiring_03222017.pdf
+ *  For wiring:  http://primalengineering.com/robots
  *
  *  For additional programming, hardware, and other projects:  http://www.primalengineering.com/robots 
  *
@@ -38,26 +38,28 @@
  *  help determine what wires may need to be swapped.
  *
  *  To Use: 
- *    1) Upload sketch to Arduino/Redboard.
- *    2) Run the Serial Monitor with your Arduino/Redboard connected to your computer via USB.
- *    3) Test the motors individually first.  
+ *    1) Uncomment the motor driver define that matches your hardware.
+ *    2) Upload sketch to Arduino/Redboard.
+ *    3) Run the Serial Monitor with your Arduino/Redboard connected to your computer via USB.
+ *    4) Test the motors individually first.  
  *        ***MAKE SURE BOTH WIRES FROM A SINGLE MOTOR ARE CONNECTED TO ONLY A SINGLE CHANNEL (M1/M2/M3/M4 on Adafruit or A/B on Ardumoto)***
  *        a) If the wrong motor moves, swap the pairs of wires for your left motor with right motor.
  *        b) If the correct motor moves, but the wrong direction, swap the black and red 
  *           motor wires for just that motor.
  *        c) Re-test individual motors after any wiring changes.
- *    4) Test both motors together to confirm individual setup is correct.
+ *    5) Test both motors together to confirm individual setup is correct.
  *    
  */
 
-// #define ADAFRUIT_MS if the Adafruit motor shield v2.3 is to be used.
-  // M1 and M2 will be used.  Right motor on M1, Left on M2.
-  // No define will default to Sparkfun Ardumoto or other makes of Dir 
-  // and PWM pin driven style drivers similar to the Ardumoto and those
-  // based upon the L298 driver.  The default pin settings will be used 
-  // except where new values have been declared.
-  // UnComment the next line if you are using the Adafruit shield
-//#define ADAFRUIT_MS 
+// Choose your Motor Driver...
+// To load default settings for either an Ardumoto version 14 or 20, or an Adafruit v2.3,
+// uncomment only the following motor driver define that matches.
+// If none are uncommented, Ardumoto v14 values will be used.
+//
+// DO NOT UNCOMMENT MORE THAN ONE
+//#define ARDUMOTO_14
+//#define ARDUMOTO_20  
+//#define ADAFRUIT_MS
 
 #include <GobbitLineCommand.h>
 

@@ -1,4 +1,4 @@
-/* 09/18/2017
+/* 10/28/2017
 
     Using the Gobbit robot with line sensor on a course with an "h" shaped path
     similar to this:
@@ -37,9 +37,14 @@
 
 */
 
-// If the Adafruit motor shield v2.3 is to be used...
-// M1 and M2 terminals will be used.  Right motor on M1, Left on M2.
-// UnComment the next line if you are using the Adafruit shield
+// Choose your Motor Driver...
+// To load default settings for either an Ardumoto version 14 or 20, or an Adafruit v2.3,
+// uncomment only the following motor driver define that matches.
+// If none are uncommented, Ardumoto v14 values will be used.
+//
+// DO NOT UNCOMMENT MORE THAN ONE
+//#define ARDUMOTO_14
+//#define ARDUMOTO_20  
 //#define ADAFRUIT_MS
 
 #include <GobbitLineCommand.h>

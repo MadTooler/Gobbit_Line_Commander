@@ -1,4 +1,4 @@
-/* 09/18/2017
+/* 10/28/2017
 
   This program is intended for the Gobbit robot with a line sensor and infrared receiver to be used
   on a lined course with either a scoreboard start/finish line or simple IR remote control for both
@@ -17,7 +17,15 @@
   
 */
 
-//#define ADAFRUIT_MS // uncomment this line if using the Adafruit Motor Shield v2.3 with the GobbitLineCommand library 
+// Choose your Motor Driver...
+// To load default settings for either an Ardumoto version 14 or 20, or an Adafruit v2.3,
+// uncomment only the following motor driver define that matches.
+// If none are uncommented, Ardumoto v14 values will be used.
+//
+// DO NOT UNCOMMENT MORE THAN ONE
+//#define ARDUMOTO_14
+//#define ARDUMOTO_20  
+//#define ADAFRUIT_MS
 
 // Servos should be used on pins 9 or 10 if needed
 // PID settings may be a little off since this will use the higher frequency PWM is used on pins 5 & 6

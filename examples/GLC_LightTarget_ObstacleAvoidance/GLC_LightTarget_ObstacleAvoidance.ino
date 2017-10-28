@@ -1,9 +1,15 @@
 // GLC Simple obstacle avoidance WITH LED lit and piezo sensor impact target
-// 03/24/2017
+// 10/28/2017
 
-// If the Adafruit motor shield v2.3 is to be used...
-// UnComment the next line.
-// #define ADAFRUIT_MS
+// Choose your Motor Driver...
+// To load default settings for either an Ardumoto version 14 or 20, or an Adafruit v2.3,
+// uncomment only the following motor driver define that matches.
+// If none are uncommented, Ardumoto v14 values will be used.
+//
+// DO NOT UNCOMMENT MORE THAN ONE
+//#define ARDUMOTO_14
+//#define ARDUMOTO_20  
+//#define ADAFRUIT_MS
 
 #define SONAR_PIN A3 // analog pin used for sensor 
 #define CLEARANCE_DISTANCE 12 // value in inches
