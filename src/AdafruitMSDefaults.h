@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h - Tuning variables for the Gobbit robot while using the Adafruit Motor Shield v2.3
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 02/12/2017
+*	Last edit 10/28/2017
 *	Released under GNU agreement
 */
 
@@ -60,5 +60,19 @@
 	#define ELEVENV_AF_BRAKE_SPD	65
 	#define ELEVENV_AF_TURN_SPD_HIGH	60 
 	#define ELEVENV_AF_TURN_SPD_LOW	20
+	
+	// pin defaults
+	//#define AFV23_DIRA	
+	//#define AFV23_PWMA
+	//#define AFV23_DIRB
+	//#define AFV23_PWMB
+	#define AFV23_QTR0	2
+	#define AFV23_QTR1	4
+	#define AFV23_QTR2	5
+	#define AFV23_QTR3	6
+	#define AFV23_QTR4	7
+	#define AFV23_QTR5	8
+	#define AFV23_QTR6	9
+	#define AFV23_QTR7	10
 	
 #endif

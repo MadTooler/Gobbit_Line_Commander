@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 09/18/2017
+*	Last edit 10/28/2017
 *	Released under GNU agreement
 */
 
@@ -167,7 +167,8 @@ class GobbitLineCommand
 		unsigned int sensorValues[NUM_SENSORS]; // array with individual sensor reading values
 		unsigned int linePosition = 0; // value from 0-7000 to indicate position of line between sensor 0 - 7
 		unsigned int pastLinePosition = 0;  // value from 0-7000 to indicate position of line between sensor 0 - 7, used for Operation Flux Capacitor
-		unsigned char sensorPins[8]={2, 4, 5, 6, 7, 8, 9, 10}; // defualt values for Gobbit wiring
+		// **** moved pin defines to #ifdef's for motor driver options
+		//unsigned char sensorPins[8]={2, 4, 5, 6, 7, 8, 9, 10}; // defualt values for Gobbit wiring
 		
 		#if SERVO_ENABLE
 			// gripper angle limit default values
@@ -175,17 +176,51 @@ class GobbitLineCommand
 			int gripClosedAngle = NOT_SET;
 			int gripOpenAngle = NOT_SET;
 		#endif
-				
-		// Use the Adafruit Motor Shield flag
-		byte useAFMS = USE_AFMS;
 		
-		// ArduMoto motor driver vars
-		// dir_a/b sets direction.  LOW is Forward, HIGH is Reverse
-		// pwm_a/b sets speed.  Value range is 0-255.  For example, if you set the speed at 100 then 100/255 = 39% duty cycle = slow
-		int dir_a = 12;  //direction control for Ardumoto outputs A1 and A2 is on digital pin 12  (Left motor)
-		int pwm_a = 3;  //PWM control for Ardumoto outputs A1 and A2 is on digital pin 10  (Left motor)
-		int dir_b = 13;  //direction control for Ardumoto outputs B3 and B4 is on digital pin 13  (Right motor)
-		int pwm_b = 11;  //PWM control for Ardumoto outputs B3 and B4 is on digital pin 11  (Right motor)
+
+
+		// ****
+		// set pin values if a standard motor driver was defined
+		#ifdef ADAFRUIT_MS
+			// if using adafruit motor shield v2.3 set the pins
+			unsigned char sensorPins[8]={AFV23_QTR0, AFV23_QTR1, AFV23_QTR2, AFV23_QTR3, AFV23_QTR4, AFV23_QTR5, AFV23_QTR6, AFV23_QTR7}; // default values for Gobbit wiring
+			
+			// ***** these will not be used when adafruit driver is declared, only keeping in for now until confirm missing does not break anything
+			int dir_a = 12;  //direction control for Ardumoto outputs A1 and A2 is on digital pin 12  (Left motor)
+			int pwm_a = 3;  //PWM control for Ardumoto outputs A1 and A2 is on digital pin 10  (Left motor)
+			int dir_b = 13;  //direction control for Ardumoto outputs B3 and B4 is on digital pin 13  (Right motor)
+			int pwm_b = 11;  //PWM control for Ardumoto outputs B3 and B4 is on digital pin 11  (Right motor)
+			
+ 		#elif defined ARDUMOTO_14
+			unsigned char sensorPins[8]={AMV14_QTR0, AMV14_QTR1, AMV14_QTR2, AMV14_QTR3, AMV14_QTR4, AMV14_QTR5, AMV14_QTR6, AMV14_QTR7}; // default values for Gobbit wiring
+			int dir_a = AMV14_DIRA;  //direction control for Ardumoto outputs A1 and A2 is on digital pin 12  (Left motor)
+			int pwm_a = AMV14_PWMA;  //PWM control for Ardumoto outputs A1 and A2 is on digital pin 10  (Left motor)
+			int dir_b = AMV14_DIRB;  //direction control for Ardumoto outputs B3 and B4 is on digital pin 13  (Right motor)
+			int pwm_b = AMV14_PWMB;  //PWM control for Ardumoto outputs B3 and B4 is on digital pin 11  (Right motor) 
+
+		#elif defined ARDUMOTO_20
+			unsigned char sensorPins[8]={AMV20_QTR0, AMV20_QTR1, AMV20_QTR2, AMV20_QTR3, AMV20_QTR4, AMV20_QTR5, AMV20_QTR6, AMV20_QTR7}; // default values for Gobbit wiring
+			int dir_a = AMV20_DIRA;  //direction control for Ardumoto outputs A1 and A2 is on digital pin 12  (Left motor)
+			int pwm_a = AMV20_PWMA;  //PWM control for Ardumoto outputs A1 and A2 is on digital pin 10  (Left motor)
+			int dir_b = AMV20_DIRB;  //direction control for Ardumoto outputs B3 and B4 is on digital pin 13  (Right motor)
+			int pwm_b = AMV20_PWMB;  //PWM control for Ardumoto outputs B3 and B4 is on digital pin 11  (Right motor)
+		
+		#else
+			unsigned char sensorPins[8]={2, 4, 5, 6, 7, 8, 9, 10}; // defualt values for Gobbit wiring
+			// for default if nothing was declared, use original ArduMoto motor driver vars
+			// dir_a/b sets direction.  LOW is Forward, HIGH is Reverse
+			// pwm_a/b sets speed.  Value range is 0-255.  For example, if you set the speed at 100 then 100/255 = 39% duty cycle = slow
+			int dir_a = 12;  //direction control for Ardumoto outputs A1 and A2 is on digital pin 12  (Left motor)
+			int pwm_a = 3;  //PWM control for Ardumoto outputs A1 and A2 is on digital pin 10  (Left motor)
+			int dir_b = 13;  //direction control for Ardumoto outputs B3 and B4 is on digital pin 13  (Right motor)
+			int pwm_b = 11;  //PWM control for Ardumoto outputs B3 and B4 is on digital pin 11  (Right motor) 
+		#endif
+
+		
+		// Use the Adafruit Motor Shield flag
+		// This is a work around
+		byte useAFMS = USE_AFMS;	
+		
 
 		// pid loop vars
 		float error = 0;

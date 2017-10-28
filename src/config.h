@@ -40,6 +40,6 @@
 	// Enable use of Servo functions ("true" or 1 enables, "false" or 0 disables).
 	// Initial purpose of setting "false" is for where the required TIMER1 that servo.h use could be in conflict with some other libraries.
 	// Disabling will also conserve memory and compile time.
-	#define SERVO_ENABLE true
+	#define SERVO_ENABLE false
 	
 #endif

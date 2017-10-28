@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h - Tuning variables for the Gobbit robot while using the Ardumoto Motor Shield from SparkFun
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 02/12/2017
+*	Last edit 10/28/2017
 *	Released under GNU agreement
 */
 
@@ -60,6 +60,35 @@
 	#define ELEVENV_BRAKE_SPD	65
 	#define ELEVENV_TURN_SPD_HIGH	60 
 	#define ELEVENV_TURN_SPD_LOW	25
+	
+	// ardumoto v14 pin defaults
+	#define AMV14_DIRA	12
+	#define AMV14_PWMA	3
+	#define AMV14_DIRB	13
+	#define AMV14_PWMB	11
+	#define AMV14_QTR0	2
+	#define AMV14_QTR1	4
+	#define AMV14_QTR2	5
+	#define AMV14_QTR3	6
+	#define AMV14_QTR4	7
+	#define AMV14_QTR5	8
+	#define AMV14_QTR6	9
+	#define AMV14_QTR7	10
+	
+	// ardumoto v20 pin defaults
+	#define AMV20_DIRA	4
+	#define AMV20_PWMA	11
+	#define AMV20_DIRB	2
+	#define AMV20_PWMB	3
+	#define AMV20_QTR0	5
+	#define AMV20_QTR1	6
+	#define AMV20_QTR2	7
+	#define AMV20_QTR3	8
+	#define AMV20_QTR4	9
+	#define AMV20_QTR5	10	
+	#define AMV20_QTR6	12
+	#define AMV20_QTR7	13
+		
 
 
 #endif
