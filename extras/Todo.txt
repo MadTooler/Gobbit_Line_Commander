@@ -1,7 +1,14 @@
 Todo's
  
 	Current items todo:
+
 		
+		Race track... 
+		
+			add Serial.parseInt() to race track scoreboard to allow for more than 9 on laps.
+				see arduino communication example : ReadASCIIString
+			
+			IR shorten bit size format, maybe sony, and make sure it has a start and stop character
 	
 		Make more efficient to reduce size of library.
 		
@@ -22,6 +29,8 @@ Todo's
 		Testing:
 		
 			Works OK now, but should test and determine if coarse tune variable/defines are best for all motor drivers
+			
+			Test adafruit motor shield and determine if other defines should be added as with the ardumotos
 
 			
 		Examples
@@ -29,6 +38,7 @@ Todo's
 			Read through pid tune and revise.  
 				Add coarse instructions.
 		
+			Update QTRtest to use .h config files for motor drivers and other pins
 		
 			Light and Servo Targets
 			

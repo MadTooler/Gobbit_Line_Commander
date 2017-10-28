@@ -1,5 +1,11 @@
 change log
 
+0.0.9
+
+	Added Ardumoto v14 and v20 and AdafruitMS default pin values in their .h files
+	
+	Added motor shield select comment at beginning of examples for three different shields
+
 0.0.8
 
 	Created line to disable the internal call for the servo library, functions, and variables, if not needed, or if causing a conflict.
