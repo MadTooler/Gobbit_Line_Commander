@@ -1,7 +1,7 @@
 /*
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
-*	Created by Jason Talley 
+*	Created by Jason Talley
 *	Last edit 09/18/2017
 *	Released under GNU agreement
 */
@@ -9,7 +9,7 @@
 /*
 *	PD Line Following for the Gobbit and Zagros Robotics Starter Kit with Pololu Line Sensor
 *
-*	For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots 
+*	For assembly, wiring, programming, and other examples, see: http://www.primalengineering.com/robots
 *
 *
 *	Parts list:
@@ -46,7 +46,7 @@
 #include "config.h"
 #include "AdafruitMSDefaults.h"
 #include "ArdumotoDefaults.h"
-
+#include "AdafruitMotor.h"
 
 #if SERVO_ENABLE
 	#include <Servo.h>
@@ -55,34 +55,19 @@
 	Servo gripper;
 #endif
 
-// load Adafruit Motor Shield library and initialize objects
-//     NOTE cannot access USE_AFMS or status of ADAFRUIT_MS from main sketch for conditinal loading of AFMS library.
-//     This is a limitation of the arduino IDE compiler, and it does not appear to be adopted in the future.
-#include <Adafruit_MotorShield.h>
-
-// #define ADAFRUIT_MS in main program if the Adafruit motor shield v2.3 is to be used.
-// M1 and M2 will be used.  Right motor on M1, Left on M2.
-// No define will default to Sparkfun Ardumoto or other makes of Dir
-// and PWM pin driven style drivers similar to the Ardumoto and those
-// based upon the L298 driver.  The default pin settings will be used
-// except where new values have been declared.
-
-// Create the motor shield object with the default I2C address
-Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-// Or, create it with a different I2C address (say for stacking)
-// Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61);
-
-// Select which 'port' M1, M2, M3 or M4. In this case, M1
-Adafruit_DCMotor* rightMotor = AFMS.getMotor(1);
-// and another motor on port M2
-Adafruit_DCMotor* leftMotor = AFMS.getMotor(2);
-
 // line sensor object
 QTRSensorsRC qtrrc;
 
+GobbitLineCommand::GobbitLineCommand(){
+	motor = new AdafruitMotor();
+}
 
-// Initializes the sensor and motors.  
-// Call in setup loop.  
+GobbitLineCommand::GobbitLineCommand(Motor m){
+	motor = &m;
+}
+
+// Initializes the sensor and motors.
+// Call in setup loop.
 // Call setQTRpins, setLeftMotorPinsDirPWM, setRightMotorPinsDirPWM, and setBatteryVolts
 // functions before calling this function, if other than default are to be used.
 void GobbitLineCommand::beginGobbit(void)
@@ -92,14 +77,17 @@ void GobbitLineCommand::beginGobbit(void)
 	qtrrc.init(sensorPins, NUM_SENSORS, TIME_OUT, EMITTER_PIN);
 	delay(500); // give sensors time to set
 
+	// create with the default frequency 1.6KHz
+	motor->init();
+
 	if (volts == NOT_SET) {
 		volts = 9;
 	}
 
 	if (useAFMS) {
-		
+
 		// Adafruit Motorshield v2.3
-		
+
 		if (brakeStrength == NOT_SET)
 				brakeStrength = BRAKE_STRENGTH_AF;
 
@@ -109,7 +97,7 @@ void GobbitLineCommand::beginGobbit(void)
 			if (_kp == NOT_SET)
 				_kp = SEVENV_AF_KP;
 			if (_ki == NOT_SET)
-				_ki = SEVENV_AF_KI;			
+				_ki = SEVENV_AF_KI;
 			if (_kd == NOT_SET)
 				_kd = SEVENV_AF_KD;
 			if (_kpCoarse == NOT_SET)
@@ -139,7 +127,7 @@ void GobbitLineCommand::beginGobbit(void)
 			if (_kp == NOT_SET)
 				_kp = NINEV_AF_KP;
 			if (_ki == NOT_SET)
-				_ki = NINEV_AF_KI;	
+				_ki = NINEV_AF_KI;
 			if (_kd == NOT_SET)
 				_kd = NINEV_AF_KD;
 			if (_kpCoarse == NOT_SET)
@@ -169,7 +157,7 @@ void GobbitLineCommand::beginGobbit(void)
 			if (_kp == NOT_SET)
 				_kp = ELEVENV_AF_KP;
 			if (_ki == NOT_SET)
-				_ki = ELEVENV_AF_KI;	
+				_ki = ELEVENV_AF_KI;
 			if (_kd == NOT_SET)
 				_kd = ELEVENV_AF_KD;
 			if (_kpCoarse == NOT_SET)
@@ -177,7 +165,7 @@ void GobbitLineCommand::beginGobbit(void)
 			if (_kiCoarse == NOT_SET)
 				_kiCoarse = ELEVENV_AF_KI_COARSE;
 			if (_kdCoarse == NOT_SET)
-				_kdCoarse = ELEVENV_AF_KD_COARSE;			
+				_kdCoarse = ELEVENV_AF_KD_COARSE;
 			if (PDfineRange == NOT_SET)
 				PDfineRange = ELEVENV_AF_PD_FINE_RANGE;
 			if (_calSpeed == NOT_SET)
@@ -194,17 +182,14 @@ void GobbitLineCommand::beginGobbit(void)
 				turnSpeedLow = ELEVENV_AF_TURN_SPD_LOW;
 		}
 
-		// create with the default frequency 1.6KHz
-		AFMS.begin();
-
 		//set both motors to stop
 		setMotors(0, 0);
 	}
 
-	else { 		
-	
+	else {
+
 		// ardumoto or similar driver Dir and PWM based driver
-		
+
 		if (brakeStrength == NOT_SET)
 				brakeStrength = BRAKE_STRENGTH;
 
@@ -304,7 +289,7 @@ void GobbitLineCommand::beginGobbit(void)
 		pinMode(pwm_b, OUTPUT);
 		pinMode(dir_a, OUTPUT);
 		pinMode(dir_b, OUTPUT);
-		
+
 		// stop both motors
 		setMotors(0, 0);
 	}
@@ -314,7 +299,7 @@ void GobbitLineCommand::beginGobbit(void)
 
 
 //-----------------
-// Run a calibration of the line sensor by sweeping back and forth 
+// Run a calibration of the line sensor by sweeping back and forth
 // over a line at the called speed between 0-100.
 //   Speed must be a 0 or positive value
 //   0 will load the default values based upon voltage if declared.
@@ -326,18 +311,18 @@ void GobbitLineCommand::calibrateLineSensor(void)
 
 
 //-----------------
-// Run a calibration of the line sensor by sweeping back and forth 
+// Run a calibration of the line sensor by sweeping back and forth
 // over a line at the called speed between 0-100.
 //   Speed must be a 0 or positive value
 //   0 will load the default values based upon voltage if declared.
 void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 {
 	calSpeed = constrain(calSpeed, 0,100);
-	
+
 	// use default calspeed if not set here
 	if (calSpeed==0)
 		calSpeed = _calSpeed;
-	
+
 	// only used for updating value that is printed with serial print.
 	else
 		_calSpeed = calSpeed;
@@ -373,7 +358,7 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 	/* **** was using this prior, but forced setting both calSpeed and turnSpeedLow if needed to adjust process.
 	// slow down speed
 	setMotors(-turnSpeedLow, turnSpeedLow);   */
-	
+
 
 	// make sure outer sensor is no longer over line
 	while (sensorValues[7] > 190) // wait for outer most sensor to exit the line
@@ -385,23 +370,23 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 	while (linePosition > (3500)) // wait for line position to find near center
 	{
 		linePosition = qtrrc.readLine(sensorValues);
-	} 
+	}
 
 	//stop both motors with braking to the right (opposite the current left turning)
-	brakeMotors(100,'R'); 
-		
+	brakeMotors(100,'R');
+
 	// delay as indicator setup and calibration is complete
 	delay(1000);
 
 } // end calibration
 
 //-----------------
-// Drive will start driving/following the line and continue following until it is able to complete the requested 
-//   direction at the next found intersection or end.  If it cannot make the requested direction, it will spin 
+// Drive will start driving/following the line and continue following until it is able to complete the requested
+//   direction at the next found intersection or end.  If it cannot make the requested direction, it will spin
 //   around fast and stop performing all other commands.
 // Turn direction value of ('L')eft, ('R')ight, ('F')orward, ('S')top, or ('U')turn.
 //    The U-turn will be evaluated by the found intersection turns available to achieve a 180 degree turn.
-void GobbitLineCommand::drive(char turnDir) 
+void GobbitLineCommand::drive(char turnDir)
 {
 	// local flag
 	byte exit = 0;
@@ -442,11 +427,11 @@ void GobbitLineCommand::drive(char turnDir)
 		}
 
 		else if (turnDir == 'S'){
-			
+
 			if(foundLeft || foundRight || foundForward || foundEnd) {
 
 				brakeMotors(brakeStrength,'B');
-			
+
 				// make sure brake flag is now off in case the previous drive command was forward
 				brakeNext = 0;
 
@@ -474,19 +459,19 @@ void GobbitLineCommand::drive(char turnDir)
 				return;
 			}
 		}
-		
+
 		// followLine in follow until intersection is found mode
 		followLine(3);
-		
+
 		// exit if this was a forward drive and the first intersection has already been passed
 		if(exit){
-			
+
 			// set brake flag if the motors are running faster than brakeSpeed value
 			// if they are not, the next turn call will see motorSpeeds as less than brakeSpeed
 			// and not brake.
-			if (RmotorSpeed > brakeSpeed || LmotorSpeed > brakeSpeed) 
+			if (RmotorSpeed > brakeSpeed || LmotorSpeed > brakeSpeed)
 				brakeNext = 1;
-			
+
 			// stop motors but not brake.
 			setMotors(0,0);
 			return;
@@ -499,9 +484,9 @@ void GobbitLineCommand::drive(char turnDir)
 //-----------------
 // Follow the line in called Mode:
 //   Mode 0, along the line and never exit so it will not do anything else outside of the function.
-//   Mode 1, do 1 thing... run through the followLine function one time and make only one 
+//   Mode 1, do 1 thing... run through the followLine function one time and make only one
 //           motor adjustment then exit.
-//   Mode 2, do 2 things... run through the followLine function one time and make only one motor 
+//   Mode 2, do 2 things... run through the followLine function one time and make only one motor
 //           adjustment while checking if an intersection is present then exit.
 //   Mode 3, follow along the line until an intersection is found, update intersection turn flags, then exit.
 //
@@ -515,7 +500,7 @@ void GobbitLineCommand::followLine(byte followMode)
 	byte findIntersection = 0;
 	byte runOnce = 0;
 	byte offLine = 0;
-	
+
 	// set mode flags
 	switch (followMode) {
 
@@ -530,19 +515,19 @@ void GobbitLineCommand::followLine(byte followMode)
 		findIntersection = 0;
 		runOnce = 1;
 		break;
-		
+
 	// follow for one motor adjustment and check if there was an intersction found then return
 	case 2:
 		findIntersection = 1;
 		runOnce = 1;
-		break;	
-	
+		break;
+
 	// follow until an intersction is found then return
 	case 3:
 		findIntersection = 1;
 		runOnce = 0;
-		break;	
-		
+		break;
+
 	// default to same as mode 0 values that will follow forever and not leave this loop
 	default:
 		findIntersection = 0;
@@ -563,7 +548,7 @@ void GobbitLineCommand::followLine(byte followMode)
 		// adjusted that had been leading to an exaggerated "twirk" when crossing the intersections.
 		// "Twirk" is a result of fast reaction of bot to early or uneven sensor reads from seeing
 		// part of an intersection before other parts since it would only not "twirk" if the intersection
-		// was perfecting entered with all sensors reading simulataneously, which could almost never 
+		// was perfecting entered with all sensors reading simulataneously, which could almost never
 		// be the case since they are read in series.
 
 		// tried this array before with a larger buffer, but it did not seem to work well.
@@ -612,7 +597,7 @@ void GobbitLineCommand::followLine(byte followMode)
 			// This will calculate adjusting speed to keep the line in center.
 
 			// If followLine was called in a mode which is to check for intersctions, then check
-			if (findIntersection) {	
+			if (findIntersection) {
 				// if an intersection is found then the found flags will be updated and will exit followLine
 				if(detectIntersection())
 					return;
@@ -637,14 +622,14 @@ void GobbitLineCommand::followLine(byte followMode)
 				kiCurrent = _ki;
 				kdCurrent = _kd;
 			}
-			
+
 			// update iAccumError accumulated error
 			iAccumError = iAccumError+error;
 
 			// calculate the new Process Variable
 			// this is the value that will be used to alter the speeds
 			PV = kpCurrent * error + kiCurrent*iAccumError + kdCurrent * (error - lastError);
-			
+
 			lastError = error;
 
 			//this code limits the PV (motor speed pwm value)
@@ -660,7 +645,7 @@ void GobbitLineCommand::followLine(byte followMode)
 			// run beeper cycle
 			beepCycle();
 
-			if (useRangeSensor) 
+			if (useRangeSensor)
 				obstacleSpeedFactor = speedAdjust(readSonarInches());
 			else
 				obstacleSpeedFactor = 1;
@@ -682,7 +667,7 @@ void GobbitLineCommand::followLine(byte followMode)
 		// Exit followLine if it is in a single adjustment mode
 		if(runOnce)
 			return;
-		
+
 		// Operation Flux Capacitor if in mode run until find intersections
 		// Part 3 of 3
 		if (findIntersection && !runOnce) {
@@ -700,7 +685,7 @@ void GobbitLineCommand::followLine(byte followMode)
 // Turn direction values of ('L')eft, ('R')ight, or ('U')turn
 //   Left turns left until the next line is found, regardless of 90 or 180 degree.
 //   Right turns right until the next line is found, regardless of 90 or 180 degree.
-//   U-turn turns left and assumes a 180 degree turn is requested where one line is 
+//   U-turn turns left and assumes a 180 degree turn is requested where one line is
 //      to be passed then stop at next.  This is actually the same as running two
 //      turn('L') commands, therefore, if there was no line at 90 degree to the left,
 //      the turn will pass the 180 mark and stop at the next line, wherever it may be.
@@ -710,25 +695,25 @@ void GobbitLineCommand::turn(char dir)
 	beepCycle();
 
 	// brake the motors if running faster than brakeSpeed value
-	if (RmotorSpeed > brakeSpeed || LmotorSpeed > brakeSpeed || brakeNext) 
+	if (RmotorSpeed > brakeSpeed || LmotorSpeed > brakeSpeed || brakeNext)
 		// stop motors with full braking
 		brakeMotors(brakeStrength,'A');
-		
+
 	else // stop both motors
 		setMotors(0, 0);
-	
+
 	// reset flags except mark
 	resetIntFlags(0);
-	
+
 	byte i = 1;
-	
+
 	// Turn left 90deg
 	if(dir =='L' || dir=='U'){
 		setMotors(-turnSpeedHigh, turnSpeedHigh);
-			
+
 		linePosition = qtrrc.readLine(sensorValues);
-		
-		
+
+
 		if (dir == 'U') i=2;
 		while(i){
 			while (sensorValues[7] < 200) // wait for outer most sensor to find the line
@@ -752,17 +737,17 @@ void GobbitLineCommand::turn(char dir)
 			}
 			i--;
 		}
-			
+
 		turnPID();
 	}
-	
+
 
 	// Turn right 90deg
 	else if(dir=='R'){
-	
+
 
 		setMotors(turnSpeedHigh, -turnSpeedHigh);
-						
+
 		linePosition = qtrrc.readLine(sensorValues);
 
 		while (sensorValues[0] < 200) // wait for outer most sensor to find the line
@@ -781,11 +766,11 @@ void GobbitLineCommand::turn(char dir)
 			linePosition = qtrrc.readLine(sensorValues);
 		}
 
-			
-		turnPID();	
-			
-		
-			
+
+		turnPID();
+
+
+
 		// previous method
 		/* 		linePosition = qtrrc.readLine(sensorValues);
 
@@ -811,10 +796,10 @@ void GobbitLineCommand::turn(char dir)
 			beepCycle();
 			linePosition = qtrrc.readLine(sensorValues);
 		}
-		
+
 		// stop both motors
 		//setMotors(0, 0);
-		
+
 		// stop motors with full braking
 		if(turnSpeedHigh>brakeSpeed)
 			brakeMotors();
@@ -830,30 +815,30 @@ void GobbitLineCommand::turn(char dir)
 // Turning/Pivot with full PID to find center
 void GobbitLineCommand::turnPID(void)
 {
-	
+
 	float kpCurrent;
 	float kiCurrent;
 	float kdCurrent;
 	iAccumError=0;
-	
+
 	// counter to stay in turn pd loop
 	// this had to be moved outside of case.
-	byte keepTurning = 0; 
-	
+	byte keepTurning = 0;
+
 	int turnSpeedPID = turnSpeedLow*1.5;
 	turnSpeedPID = constrain(turnSpeedPID, 25, 60);
-		
+
 	lastError = 0;
-	
+
 	while(1){
 		error = (float)linePosition - 3500; // 3500 is center measure of 7000 far left and 0 on far right
 
 		if (abs(error) < 100){ // value of 3500 to allow as OK off center.  too fine and it will hunt.
-			
+
 			keepTurning++;
-			
+
 			// stop both motors and exit if within stop zone for enough passes
-			if(keepTurning>1){ 
+			if(keepTurning>1){
 				setMotors(0, 0);
 				// reset iAccumError so the lineFollow calculation is not exaggerated
 				iAccumError = 0;
@@ -862,7 +847,7 @@ void GobbitLineCommand::turnPID(void)
 		}
 		else keepTurning = 0;
 
-				
+
 		// adjust the PID values per motor shield.
 		// these values were created by tuning and testing.
 		if(useAFMS){
@@ -880,7 +865,7 @@ void GobbitLineCommand::turnPID(void)
 		// This needs the ki value.  If PID is manually changed to 0 value, a minimal value will
 		// be added here to make sure the turn is completed.
 		if(kiCurrent == 0) kiCurrent = 0.0005;
-		
+
 		// update iAccumError accumulated error
 		iAccumError = iAccumError+error;
 
@@ -888,12 +873,12 @@ void GobbitLineCommand::turnPID(void)
 		// this is the value that will be used to alter the speeds
 		// ****opposite turning motors is more aggressive than followline where motors are usually turning
 		// 	in the same direction, so only use 70%  ****maybe this formula needs adjusting in a way other than this.
-		PV = (kpCurrent * error + kiCurrent*iAccumError + kdCurrent * (error - lastError)); // **** *0.7;  
+		PV = (kpCurrent * error + kiCurrent*iAccumError + kdCurrent * (error - lastError)); // **** *0.7;
 		lastError = error;
-		
-		
+
+
 		//this code limits the PV (motor speed pwm value)
-		// limit PV between -turnSpeedPID and turnSpeedPID	
+		// limit PV between -turnSpeedPID and turnSpeedPID
 		if (PV > turnSpeedPID) {
 			PV = constrain(PV, 0,turnSpeedPID);
 		}
@@ -901,16 +886,16 @@ void GobbitLineCommand::turnPID(void)
 		if (PV < -turnSpeedPID) {
 			PV = constrain(PV, -turnSpeedPID, -.0001); // -.0001 b/c still need to keep it less than 0 for direction selection below
 		}
-		
+
 
 		// run beeper cycle
 		beepCycle();
 
-		
+
 		if (PV > 0) {
 			RmotorSpeed = PV;
 			LmotorSpeed = -PV;
-			
+
 			//RmotorSpeed = PV+turnSpeedLow;//turnSpeedHigh;// * obstacleSpeedFactor;
 			//LmotorSpeed = -(PV+turnSpeedLow);//(turnSpeedHigh - abs(PV));// * obstacleSpeedFactor;
 		}
@@ -918,17 +903,17 @@ void GobbitLineCommand::turnPID(void)
 		if (PV < 0) {
 			RmotorSpeed = PV;
 			LmotorSpeed = abs(PV);
-			
+
 			//RmotorSpeed = PV-turnSpeedLow;//(turnSpeedHigh - abs(PV));// * obstacleSpeedFactor;
 			//LmotorSpeed = (abs(PV)+turnSpeedLow);//turnSpeedHigh;// * obstacleSpeedFactor;
 		}
 
 		//set motor speeds
 		setMotors(LmotorSpeed, RmotorSpeed);
-		
+
 		linePosition = qtrrc.readLine(sensorValues);
 	}
-	
+
 }
 
 
@@ -989,11 +974,11 @@ float GobbitLineCommand::speedAdjust(float currentDistance)
 //     -100 moveSpeed = reverse full speed
 //     100 = forward full speed
 //     0 = stopped;
-//   Second float value is the Turn, value of -100 to 100. 
+//   Second float value is the Turn, value of -100 to 100.
 //     -100 moveTurn = full left
 //     100 = full right
 //     0 = straight
-void GobbitLineCommand::move(float moveSpeed, float moveTurn) 
+void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 {
 	// reset all flags
 	resetIntFlags(1);
@@ -1007,7 +992,7 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 		{
 
 			// spin to right ignoring -/+ of speed
-		
+
 			setMotors(abs(moveSpeed), -abs(moveSpeed));
 
 		}
@@ -1016,7 +1001,7 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 		else if (moveTurn == -100) // spin left
 		{
 			// spin to left ignoring -/+ of speed
-		
+
 			setMotors(-abs(moveSpeed), abs(moveSpeed));
 		}
 
@@ -1067,9 +1052,9 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 	else {
 		setMotors(0, 0);
 	}
-	
+
 	beepCycle();
-	
+
 } // end move function
 
 
@@ -1107,7 +1092,7 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 	// Opens the gripper to the open angle that was declared with setGripPinOpenClosed
 	void GobbitLineCommand::gripOpen(void)
 	{
-		
+
 		// open gripper
 		gripper.write(gripOpenAngle);
 		delay(700);
@@ -1135,7 +1120,7 @@ void GobbitLineCommand::move(float moveSpeed, float moveTurn)
 // Backup with declared speed (100 max) and for a period of milliseconds.
 // This function is intended to be used with the drive() function and expected
 // with the gripper as a method to clear the gripper from objects.
-// The flags for intersection detection are reset, 
+// The flags for intersection detection are reset,
 // so the next drive() will begin moving forward again to find an intersection.
 // Backup far enough to clear the intersection and use the turn() function
 // if you do not want the robot to drive forward before turning around.
@@ -1147,18 +1132,18 @@ void GobbitLineCommand::backup(int speed, int delayTime)
 		// this will work most of the time, but if the sensor was not backed up enough
 		// to clear the intersection, if it is there, it may fail a U turn with the sensor
 		// picking up on the intersection.
-		
+
 		// reset all flags
 		resetIntFlags(1);
 		// set end back to found
-		foundEnd = 1;			
+		foundEnd = 1;
 	}
-	
+
 	else{
 		// reset all flags
 		resetIntFlags(1);
-	}	
-	
+	}
+
 	// go straight reverse
 	setMotors(-abs(speed), -abs(speed));
 
@@ -1186,8 +1171,8 @@ void GobbitLineCommand::setBatteryVolts(float unreadVolts)
 // Large Resistor size, resistor values in K ohms.
 //    33k and 100k resistors work well for a simple voltage divider up to 18 volts, conservatively.
 //
-//    CAUTION:  If using Lipo batteries, also use the checkBattery function to keep from running 
-//              the battery too low and damaging your cells or causing a fire risk.  
+//    CAUTION:  If using Lipo batteries, also use the checkBattery function to keep from running
+//              the battery too low and damaging your cells or causing a fire risk.
 //
 //    ALWAYS   be careful if you are using Lithium batteries and do not rely on this or any
 //             other software solution for absolute battery safety.
@@ -1208,20 +1193,20 @@ float GobbitLineCommand::readBatteryVolts(int analogPin, float smallResK, float 
 }
 
 //-----------------
-// Checks the battery voltage by calling readBatteryVolts, then stops all if the voltage is 
+// Checks the battery voltage by calling readBatteryVolts, then stops all if the voltage is
 //   less than minVoltage cutoff voltage.
 // Requires a voltage divider to avoid over voltage to the analog input.
 // Analog Pin#
 // Cutoff minimum voltage.  Value range depends on your divider.
-//    If using Lipo batteries, a value of 3.25 x (Number of cells) is a safe value for minVoltage to avoid 
+//    If using Lipo batteries, a value of 3.25 x (Number of cells) is a safe value for minVoltage to avoid
 //      low voltage battery damage.
 //    Alkaline, NiCAD, and NmHd batteries could be set lower, or even 0 if there is to be no cutoff.
 // Small Resistor size, resistor values in K ohms.
 // Large Resistor size, resistor values in K ohms.
 //    33k and 100k resistors work well for a simple voltage divider up to 18 volts, conservatively.
 //
-//    CAUTION:  If using Lipo batteries, also use the checkBattery function to keep from running 
-//              the battery too low and damaging your cells or causing a fire risk.  
+//    CAUTION:  If using Lipo batteries, also use the checkBattery function to keep from running
+//              the battery too low and damaging your cells or causing a fire risk.
 //
 //    ALWAYS   be careful if you are using Lithium batteries and do not rely on this or any
 //             other software solution for absolute battery safety.
@@ -1252,7 +1237,7 @@ void GobbitLineCommand::checkBattery(int analogPin, float minVoltage, float smal
 // Pin# (-1 disables)
 // Safe Distance/range to maintain between sensor and obstacle.
 //   Setting range to 8 is a good start with no gripper to allow speed adjustments
-//   and obstacle avoidance in the followLine function, while 1000 would be so large it 
+//   and obstacle avoidance in the followLine function, while 1000 would be so large it
 //   essentially disables any speed adjustments in follow mode, although that could be
 //   useful in keeping the sonar enabled for other control logic.
 void GobbitLineCommand::setSonar(int analogPin, float range)
@@ -1286,9 +1271,9 @@ float GobbitLineCommand::readSonarInches(void)
 	float sonarReading;
 	sonarReading = analogRead(sonarPin);
 	distanceInch = (sonarReading * SONAR_CONVERSION_FACTOR);
-	
+
 	beepCycle();
-	
+
 	return distanceInch;
 	}
 	else return 0;
@@ -1317,9 +1302,9 @@ void GobbitLineCommand::setPIDcoarse(float kpC, float kiC, float kdC)
 
 //-----------------
 // Sets the range of the sensor from the middle to edge that the fine/small PID values should be used.
-// Sensor readings that are in the range from this value to the edge of the sensor will use the 
+// Sensor readings that are in the range from this value to the edge of the sensor will use the
 // coarse/fast/aggressive PID values.
-// PDfineRange/fraction/portion value from 0-1.0.  
+// PDfineRange/fraction/portion value from 0-1.0.
 //    0 will force the coarse/fast/aggressive PID active always
 //    1 will leave the fine/basic/small PID always active.
 void GobbitLineCommand::setPIDfineRange(float fineRange)
@@ -1345,9 +1330,9 @@ void GobbitLineCommand::setQTRpins(unsigned char pin1, unsigned char pin2, unsig
 
 //-----------------
 // Sets the High turning speed when the turn or Drive command make the major part of the turn.
-// High is used to make the larger portion of the turn quickly, 
+// High is used to make the larger portion of the turn quickly,
 // Setting the speeds too low will not allow the robot to make the turns at all.
-// High speed value 0-100.  
+// High speed value 0-100.
 void GobbitLineCommand::setTurnHighSpeed(int highTurn)
 {
 	turnSpeedHigh = constrain(highTurn,0,100);
@@ -1357,10 +1342,10 @@ void GobbitLineCommand::setTurnHighSpeed(int highTurn)
 //-----------------
 // Sets the Low turning speed used by the turn, Drive, and end of the calibration commands.
 // The Low speed is used to reduce turn speed and creep up on the final position more accurately.
-// The low speed is also used as a reference in the turn function for controlling motors with PID, 
+// The low speed is also used as a reference in the turn function for controlling motors with PID,
 // although it is further constrained there as well.
 // Setting the speeds too low may keep the robot from making full or timely turns.
-// Low speed value 0-100.  
+// Low speed value 0-100.
 void GobbitLineCommand::setTurnLowSpeed(int lowTurn)
 {
 	turnSpeedLow = constrain(lowTurn,0,100);
@@ -1502,10 +1487,49 @@ void GobbitLineCommand::serialPrintCurrentSettings(void)
 		}
 		else
 			Serial.println("Gripper is Disabled.");
-		Serial.println();
+		Serial.println();if (useAFMS) {
+
+	}
+
+	// ardumoto or similar driver Dir and PWM based driver
+	else {
+
+		// Left stop motor
+		if (leftVelocity == 0) {
+			analogWrite(pwm_a, 0);
+		}
+
+		// Left forward
+		else if (leftVelocity > 0) {
+			digitalWrite(dir_a, LOW);
+			analogWrite(pwm_a, leftVelocity);
+		}
+
+		// Left Backward
+		else if (leftVelocity < 0) {
+			digitalWrite(dir_a, HIGH);
+			analogWrite(pwm_a, abs(leftVelocity));
+		}
+
+		// Right stop motor
+		if (rightVelocity == 0) {
+			analogWrite(pwm_b, 0);
+		}
+
+		// Right forward
+		else if (rightVelocity > 0) {
+			digitalWrite(dir_b, LOW);
+			analogWrite(pwm_b, rightVelocity);
+		}
+
+		// Right Backward
+		else if (rightVelocity < 0) {
+			digitalWrite(dir_b, HIGH);
+			analogWrite(pwm_b, abs(rightVelocity));
+		}
 	#endif
-	
-	
+
+
 	if (beepPin != NOT_SET) {
 		Serial.println("Beeper is enabled.");
 		Serial.print(beepPin);
@@ -1522,7 +1546,7 @@ void GobbitLineCommand::serialPrintCurrentSettings(void)
 	Serial.print(_kp);
 	Serial.println("   P fine variable");
 	Serial.println();
-	
+
 	Serial.print(_ki);
 	Serial.println("   I fine variable");
 	Serial.println();
@@ -1530,11 +1554,11 @@ void GobbitLineCommand::serialPrintCurrentSettings(void)
 	Serial.print(_kd);
 	Serial.println("   D fine variable");
 	Serial.println();
-	
+
 	Serial.print(_kpCoarse);
 	Serial.println("   P coarse variable");
 	Serial.println();
-	
+
 	Serial.print(_kiCoarse);
 	Serial.println("   I coarse variable");
 	Serial.println();
@@ -1542,7 +1566,7 @@ void GobbitLineCommand::serialPrintCurrentSettings(void)
 	Serial.print(_kdCoarse);
 	Serial.println("   D coarse variable");
 	Serial.println();
-	
+
 
 	Serial.print(PDfineRange);
 	Serial.println("   PD Fine Range of Sensor");
@@ -1583,14 +1607,21 @@ void GobbitLineCommand::serialPrintCurrentSettings(void)
 //    0 stopped
 void GobbitLineCommand::setMotors(float leftVelocity, float rightVelocity)
 {
-	
 	// DO NOT place beepCycle in this function. setMotors is called by beepCycle, therefore it would cause a cyclical crash.
-	
+
 	// Update current motor speed values for reference by other functions
 	// Primarily used for braking decisions at this time
 	RmotorSpeed = rightVelocity;
 	LmotorSpeed = leftVelocity;
-	
+
+	// if Adafruit Motorshield v2.3 was defined
+	// Set the speed to start, from 0 (off) to 255 (max speed)
+	if (useAFMS) {
+		//Set motor speeds
+		motor->setMotors(leftVelocity, rightVelocity);
+		return;
+	}
+
 	// set speed with ratio of max possible for controller of 255 / max speed value
 	leftVelocity = leftVelocity * 2.55;
 	rightVelocity = rightVelocity * 2.55;
@@ -1599,83 +1630,39 @@ void GobbitLineCommand::setMotors(float leftVelocity, float rightVelocity)
 	leftVelocity = constrain(leftVelocity, -255, 255);
 	rightVelocity = constrain(rightVelocity, -255, 255);
 
-	// if Adafruit Motorshield v2.3 was defined
-	// Set the speed to start, from 0 (off) to 255 (max speed)
-	if (useAFMS) {
-		// Left stop motor
-		if (leftVelocity == 0) {
-			leftMotor->setSpeed(0);
-			leftMotor->run(FORWARD);
-			//leftMotor->run(RELEASE);
-		}
-
-		// Left forward
-		else if (leftVelocity > 0) {
-			leftMotor->run(FORWARD);
-			leftMotor->setSpeed(leftVelocity);
-		}
-
-		// Left Backward
-		else if (leftVelocity < 0) {
-			leftMotor->run(BACKWARD);
-			leftMotor->setSpeed(abs(leftVelocity));
-		}
-
-		// Right stop motor
-		if (rightVelocity == 0) {
-			rightMotor->setSpeed(0);
-			rightMotor->run(FORWARD);
-		}
-
-		// Right forward
-		else if (rightVelocity > 0) {
-			rightMotor->run(FORWARD);
-			rightMotor->setSpeed(rightVelocity);
-		}
-
-		// Right Backward
-		else if (rightVelocity < 0) {
-			rightMotor->run(BACKWARD);
-			rightMotor->setSpeed(abs(rightVelocity));
-		}
+	// ardumoto or similar driver Dir and PWM based driver
+	// Left stop motor
+	if (leftVelocity == 0) {
+		analogWrite(pwm_a, 0);
 	}
 
-	// ardumoto or similar driver Dir and PWM based driver
-	else {
+	// Left forward
+	else if (leftVelocity > 0) {
+		digitalWrite(dir_a, LOW);
+		analogWrite(pwm_a, leftVelocity);
+	}
 
-		// Left stop motor
-		if (leftVelocity == 0) {
-			analogWrite(pwm_a, 0);
-		}
+	// Left Backward
+	else if (leftVelocity < 0) {
+		digitalWrite(dir_a, HIGH);
+		analogWrite(pwm_a, abs(leftVelocity));
+	}
 
-		// Left forward
-		else if (leftVelocity > 0) {
-			digitalWrite(dir_a, LOW);
-			analogWrite(pwm_a, leftVelocity);
-		}
+	// Right stop motor
+	if (rightVelocity == 0) {
+		analogWrite(pwm_b, 0);
+	}
 
-		// Left Backward
-		else if (leftVelocity < 0) {
-			digitalWrite(dir_a, HIGH);
-			analogWrite(pwm_a, abs(leftVelocity));
-		}
+	// Right forward
+	else if (rightVelocity > 0) {
+		digitalWrite(dir_b, LOW);
+		analogWrite(pwm_b, rightVelocity);
+	}
 
-		// Right stop motor
-		if (rightVelocity == 0) {
-			analogWrite(pwm_b, 0);
-		}
-
-		// Right forward
-		else if (rightVelocity > 0) {
-			digitalWrite(dir_b, LOW);
-			analogWrite(pwm_b, rightVelocity);
-		}
-
-		// Right Backward
-		else if (rightVelocity < 0) {
-			digitalWrite(dir_b, HIGH);
-			analogWrite(pwm_b, abs(rightVelocity));
-		}
+	// Right Backward
+	else if (rightVelocity < 0) {
+		digitalWrite(dir_b, HIGH);
+		analogWrite(pwm_b, abs(rightVelocity));
 	}
 
 }
@@ -1683,24 +1670,24 @@ void GobbitLineCommand::setMotors(float leftVelocity, float rightVelocity)
 
 
 //-----------------
-// Brake motors with Auto choice of strength and direction by a quick reversal of motors to stop motion.  
+// Brake motors with Auto choice of strength and direction by a quick reversal of motors to stop motion.
 void GobbitLineCommand::brakeMotors(void)
 {
 	brakeMotors(100,'A');
 }
 
-	
+
 
 //-----------------
-// Brake motors expanded function by a quick reversal of motors to stop motion in the declared direction. 
-// Receives an int value as a percentage of the BRAKING_TIME milliseconds, and direction of reversal as character 
+// Brake motors expanded function by a quick reversal of motors to stop motion in the declared direction.
+// Receives an int value as a percentage of the BRAKING_TIME milliseconds, and direction of reversal as character
 //   0% to 200% percentage
 //   'F'orward, 'B'ackward, 'R'ight, 'L'eft, 'A'uto ... direction is intended as the opposite of the current direction of motion
 void GobbitLineCommand::brakeMotors(int bStrength,char direction)
 {
-	
+
 	bStrength = constrain(bStrength, 0, 200);
-	
+
 	// adjust the amount of time the motors will be reversed by the bStrength (brake strength)
 	int brakeTime = (BRAKING_TIME * bStrength)/100;
 
@@ -1711,99 +1698,99 @@ void GobbitLineCommand::brakeMotors(int bStrength,char direction)
 		// if turning/spinning left then set direction of braking to right
 		if(LmotorSpeed<0  && RmotorSpeed>0)
 			direction ='R';
-		
+
 		// if turning/spinning right then set direction of braking to the left
 		else if(LmotorSpeed>0  && RmotorSpeed<0)
 			direction ='L';
 
-		
+
 		// if moving in reverse then set direction of braking to forward
 		else if(LmotorSpeed<0)
 			direction ='F';
-		
+
 		// then must be moving forward then set direction of braking to backward
-		else 
+		else
 			direction ='B';
 	}
-	
+
 	switch (direction){
 
 		case 'R': // brake by reversing to the right
 			setMotors(100, -100);
-			
+
 			// using half the time that is used for straight travels
-			delay(brakeTime/2);	  
+			delay(brakeTime/2);
 			break;
-     
+
 		case 'L': // brake by reversing to the left
 			setMotors(-100, 100);
-			
+
 			// using half the time that is used for straight travels
-			delay(brakeTime/2);	  
+			delay(brakeTime/2);
 			break;
-			
+
 		case 'F': // brake by reversing forward
   			setMotors(100, 100);
 
 			delay(brakeTime);
-				
+
 			// brake right motor a little longer
 			//setMotors(0, 100);
 			//delay(5);
-			break;	
+			break;
 
 		case 'B': // brake by reversing backwards/reverse
   			setMotors(-100, -100);
 
 			delay(brakeTime);
-			
+
 			// brake left motor a little longer
 			setMotors(-100, 0);
 			delay(5);
 			break;
 
 	}
-	
+
 /*  Prior version with only the auto mode and percent of brake time
-	
+
 	// if turning/spinning left
 	if(LmotorSpeed<0  && RmotorSpeed>0){
 		setMotors(100, -100);
-		
+
 		// using half the time that is used for straight travels
 		delay(brakeTime/2);
 	}
-	
+
 	// if turning/spinning right
 	else if(LmotorSpeed>0  && RmotorSpeed<0){
 		setMotors(-100, 100);
-		
+
 		// using half the time that is used for straight travels
 		delay(brakeTime/2);
 	}
-	
+
 	// if moving in reverse
 	else if(LmotorSpeed<0){
 		setMotors(100, 100);
 
 		delay(brakeTime);
-			
+
 		// brake right motor a little longer
 		setMotors(0, 100);
 		delay(5);
-	} 
-	
+	}
+
 	// then must be moving forward
   	else {
 		setMotors(-100, -100);
 
 		delay(brakeTime);
-		
+
 		// brake left motor a little longer
 		setMotors(-100, 0);
 		delay(5);
 	}   */
-	
+
 
 	// stop both motors
 	setMotors(0, 0);
@@ -1812,7 +1799,7 @@ void GobbitLineCommand::brakeMotors(int bStrength,char direction)
 //-----------------
 // Sets the beeper pin#.
 //   The beeper functionality is a simple HIGH/LOW output, intended for
-//   activating a simple piezo style beeper/buzzer.  However, 
+//   activating a simple piezo style beeper/buzzer.  However,
 //   devices other than beepers could be controlled by this function.
 void GobbitLineCommand::setBeeperPin(int pin)
 {
@@ -1820,15 +1807,15 @@ void GobbitLineCommand::setBeeperPin(int pin)
 	pinMode(pin, OUTPUT);
 
 	// only used as flag and feedback for serialPrintCurrentSettings
-	beepPin = pin; 
+	beepPin = pin;
 }
 
 //-----------------
-// Starts the beeper with values: 
+// Starts the beeper with values:
 //   Count of how many beeps,
 //   Time in milliseconds for duration of beep with equal time between beeps,
 //   Wait 0/1 if motors and all functions should be paused and wait till beeping stops.
-// The beepCycle function completes the beep cycle and is called from other library 
+// The beepCycle function completes the beep cycle and is called from other library
 //   functions to complete the beeps without delay if the Wait was called as 0.
 void GobbitLineCommand::beep(unsigned int count, unsigned int length, byte wait)
 {
@@ -1844,7 +1831,7 @@ void GobbitLineCommand::beep(unsigned int count, unsigned int length, byte wait)
 	// else may not be necessary
 	else
 		digitalWrite(beepPin, LOW);
-	
+
 }
 
 //-----------------
@@ -1903,7 +1890,7 @@ byte GobbitLineCommand::detectIntersection(void)
 {
 	// reset all flags
 	resetIntFlags(1);
-	
+
 	// We use the inner six sensors (1 thru 6) to
 	// determine if there is a line forward (straight ahead), and the
 	// sensors 0 and 7 if the path turns.
@@ -1911,7 +1898,7 @@ byte GobbitLineCommand::detectIntersection(void)
 		// There is no line visible ahead, and we didn't see any
 		// intersection.  Must be a dead end.
 		foundEnd = 1;
-		
+
 		// Set motors both to maxSpeed to allow braking to work properly in the event some followLine motor adjust
 		// had last made on motor a negative correction value.
 		setMotors(maxSpeed, maxSpeed);
@@ -1921,7 +1908,7 @@ byte GobbitLineCommand::detectIntersection(void)
 
 	else if (sensorValues[0] > 200 || sensorValues[7] > 200) {
 		// Found an intersection.
-		
+
 		byte left = 0;
 		byte right = 0;
 
@@ -1958,11 +1945,11 @@ byte GobbitLineCommand::detectIntersection(void)
 			// if passed, exit loop
 			if ((foundRight || foundLeft) && !right && !left){
 				lookingRightLeft = 0;
-				
+
 				// if the time driving through intersection was greater than FIND_MARK_TIME, then a marker must have been found
-				if (millis() - mLastTime > FIND_MARK_TIME) 
+				if (millis() - mLastTime > FIND_MARK_TIME)
 					foundMark = 1;
-			}	
+			}
 
 			// check if timed out and may be over running the course
 			else if (millis() - mLastTime > FIND_INTERSECTION_MAXTIME) {
@@ -1982,10 +1969,10 @@ byte GobbitLineCommand::detectIntersection(void)
 			// found tee
 			foundEnd = 1;
 		}
-		
+
 		return 1;
 	}
-	
+
 	else{
 		// No intersection found
 		return 0;
@@ -1999,42 +1986,42 @@ byte GobbitLineCommand::detectLine(char sensorLRCA)
 {
 	// check if a line is present
 	linePosition = qtrrc.readLine(sensorValues);
-	
+
 	beepCycle();
 
 	switch (sensorLRCA) {
 
 	// If the line is found on the far Left sensor
 	case 'L':
-		if (sensorValues[7] > 200) 
+		if (sensorValues[7] > 200)
 		return 1;
 		break;
-		
+
 	// If the line is found on the far Right sensor
 	case 'R':
-		if (sensorValues[0] > 200) 
+		if (sensorValues[0] > 200)
 		return 1;
 		break;
-		
+
 	// If the line is found in the middle 2 sensors
 	// Will not use the outer sensors to try and find when more centered.
 	case 'C':
-		if (sensorValues[3] > 200 || sensorValues[4] > 200) 
+		if (sensorValues[3] > 200 || sensorValues[4] > 200)
 		return 1;
-		break;	
-		
+		break;
+
 	// Look for the line if found on Any of the sensors
 	case 'A':
 		if (sensorValues[0] > 200 || sensorValues[1] > 200 || sensorValues[2] > 200 || sensorValues[3] > 200 || sensorValues[4] > 200 || sensorValues[5] > 200 || sensorValues[6] > 200 || sensorValues[7] > 200)
 		return 1;
-		break;	
+		break;
 
 	default:
 		break;
 	}
 
-	// if not found 
-	return 0;	
+	// if not found
+	return 0;
 
 }
 
@@ -2042,8 +2029,8 @@ byte GobbitLineCommand::detectLine(char sensorLRCA)
 //-----------------
 // Catch the Line by calling detectLine('A') until any sensor sees the line,
 // then calling followLine(1) enough times to align the robot with the line.
-// This assumes there was already some move or other motor command prior that 
-// has the robot moving towards a line. 
+// This assumes there was already some move or other motor command prior that
+// has the robot moving towards a line.
 // The function does not exit until it has caught the line.
 void GobbitLineCommand::catchLine(void)
 {
@@ -2051,7 +2038,7 @@ void GobbitLineCommand::catchLine(void)
 	while(!detectLine('A'));
 
 	for(int i=0; i<150; i++) followLine(1);
-	
+
 }
 
 
@@ -2059,7 +2046,7 @@ void GobbitLineCommand::catchLine(void)
 // Reset Intersection flags
 void GobbitLineCommand::resetIntFlags(byte resetMark)
 {
-	if(resetMark) 
+	if(resetMark)
 		foundMark = 0;
 
 	foundLeft = 0;
@@ -2067,5 +2054,5 @@ void GobbitLineCommand::resetIntFlags(byte resetMark)
 	foundRight = 0;
 	foundEnd = 0;
 	brakeNext = 0;
-	
+
 }
