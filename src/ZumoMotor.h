@@ -1,9 +1,9 @@
-#ifndef AdafruitMotor_h
-#define AdafruitMotor_h
+#ifndef ZumoMotor_h
+#define ZumoMotor_h
 
 #include "Motor.h"
 
-class AdafruitMotor : public Motor {
+class ZumoMotor : public Motor {
   public:
     void init();
     void setMotors(float leftVelocity, float rightVelocity);
