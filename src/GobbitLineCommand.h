@@ -74,7 +74,8 @@
 
 //Motor interface
 #include "Motor.h"
-
+//Line Sensor interface
+#include "LineSensor.h"
 
 
 // indicator initial value used to indicate variable has not been set by main program
@@ -86,7 +87,7 @@ class GobbitLineCommand
 		//Default contructor
 		GobbitLineCommand();
 		//Injectable contructor
-		GobbitLineCommand(Motor motor);
+		GobbitLineCommand(Motor& motor, LineSensor& lineSensor);
 		// functions
 
 		void setQTRpins(unsigned char pin1, unsigned char pin2, unsigned char pin3, unsigned char pin4, unsigned char pin5, unsigned char pin6, unsigned char pin7, unsigned char pin8); // use to set qtr sensor pins if default Gobbit wiring will not be used
@@ -156,15 +157,23 @@ class GobbitLineCommand
 	private:
 		//Generic Motor driver - will be injected at run time
 		Motor* motor;
-		// functions
+		//Generic Line sensor
+		LineSensor* lineSensor;
 
+		// functions
 		void turnPID(void);
 		void noWayFreakOut(void);
 		float speedAdjust(float currentDistance);
 		void beepCycle(void);
 		byte detectIntersection(void); // Detect Intersections and update flags
 		void resetIntFlags(byte resetMark); // Reset Intersection flags
-
+		unsigned int readLine();
+		bool isLineRight();
+		bool isLineLeft();
+		bool isLineFarRight();
+		bool isLineFarLeft();
+		bool isLineCenter();
+		bool isLineVisible();
 
 		// variables
 

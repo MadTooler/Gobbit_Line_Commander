@@ -37,11 +37,6 @@
 
 #include <Arduino.h>
 
-//QTRSensors library must be loaded to your arduino libraries folder.
-// Easiest to use the library manager to install
-// later releases may be able to auto load if this library is made accessible in arduino library manager.
-#include <QTRSensors.h> // Pololu QTR Library
-
 #include "GobbitLineCommand.h"
 #include "config.h"
 #include "AdafruitMSDefaults.h"
@@ -55,18 +50,18 @@
 	Servo gripper;
 #endif
 
-// line sensor object
-QTRSensorsRC qtrrc;
-
 GobbitLineCommand::GobbitLineCommand(){
-	motor = new AdafruitMotor();
+	//Set default hardware
+	motor = new Motor();
+	lineSensor = new LineSensor();
 }
 
-GobbitLineCommand::GobbitLineCommand(Motor m){
+GobbitLineCommand::GobbitLineCommand(Motor& m, LineSensor& line){
 	motor = &m;
+	lineSensor = &line;
 }
 
-// Initializes the sensor and motors.
+// Initializes the sensor and motor
 // Call in setup loop.
 // Call setQTRpins, setLeftMotorPinsDirPWM, setRightMotorPinsDirPWM, and setBatteryVolts
 // functions before calling this function, if other than default are to be used.
@@ -74,8 +69,7 @@ void GobbitLineCommand::beginGobbit(void)
 {
 
 	// initialize sensor
-	qtrrc.init(sensorPins, NUM_SENSORS, TIME_OUT, EMITTER_PIN);
-	delay(500); // give sensors time to set
+	lineSensor->init();
 
 	// create with the default frequency 1.6KHz
 	motor->init();
@@ -340,19 +334,19 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 			setMotors(-calSpeed, calSpeed);
 		}
 
-		qtrrc.calibrate(); // reads all sensors with the define timeout set at 2500 microseconds (2.5 milliseconds) for sensor outputs to go low.
+		lineSensor->calibrate();
 
 	} // end calibration cycle
 
 	// read calibrated sensor values and obtain a measure of the line position from 0 to 7000
-	linePosition = qtrrc.readLine(sensorValues);
+	linePosition = readLine();
 
 
  	// read the value of only a single sensor to see the line.
 	// when the value is greater than 200 the sensor sees the line.
-	while (sensorValues[7] < 200) // wait for outer line sensor to see line
+	while (!isLineFarLeft()) // wait for outer line sensor to see line
 	{
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 	}
 
 	/* **** was using this prior, but forced setting both calSpeed and turnSpeedLow if needed to adjust process.
@@ -361,15 +355,15 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 
 
 	// make sure outer sensor is no longer over line
-	while (sensorValues[7] > 190) // wait for outer most sensor to exit the line
+	while (isLineFarLeft()) // wait for outer most sensor to exit the line
 	{
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 	}
 
 	// find near center
 	while (linePosition > (3500)) // wait for line position to find near center
 	{
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 	}
 
 	//stop both motors with braking to the right (opposite the current left turning)
@@ -379,6 +373,10 @@ void GobbitLineCommand::calibrateLineSensor(int calSpeed)
 	delay(1000);
 
 } // end calibration
+
+unsigned int GobbitLineCommand::readLine(){
+	return lineSensor->readLine();
+}
 
 //-----------------
 // Drive will start driving/following the line and continue following until it is able to complete the requested
@@ -555,9 +553,9 @@ void GobbitLineCommand::followLine(byte followMode)
 		// It read sensors and stored the values numPastRead times to use as past reference.
 		// the approximate time of 2.5ms/call creates a buffered time delay
 		// for (int i = 0; i < numPastReads; i++)
-		//	pastLinePositions[i] = qtrrc.readLine(sensorValues);
+		//	pastLinePositions[i] = readLine();
 
-		pastLinePosition = qtrrc.readLine(sensorValues);
+		pastLinePosition = readLine();
 		// the read takes a very short time, but is a slight delay which we are utilizing.  Do not add additional delay.
 	}
 
@@ -566,7 +564,7 @@ void GobbitLineCommand::followLine(byte followMode)
 		offLine = 0;
 
 		// read calibrated sensor values and obtain a measure of the currnet line position from 0 to 7000.
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 
 		// simple line following portion for way off line adjustment
 		// 0 is far Right sensor while 7 (7000 return) is far Left sensor
@@ -711,16 +709,16 @@ void GobbitLineCommand::turn(char dir)
 	if(dir =='L' || dir=='U'){
 		setMotors(-turnSpeedHigh, turnSpeedHigh);
 
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 
 
 		if (dir == 'U') i=2;
 		while(i){
-			while (sensorValues[7] < 200) // wait for outer most sensor to find the line
+			while (!isLineFarLeft()) // wait for outer most sensor to find the line
 			{
 				beepCycle();
 
-				linePosition = qtrrc.readLine(sensorValues);
+				linePosition = readLine();
 			}
 
 			if(i<2)
@@ -729,11 +727,11 @@ void GobbitLineCommand::turn(char dir)
 
 
 			// make sure outer sensor is no longer over line
-			while (sensorValues[7] > 190) // wait for outer most sensor to exit the line
+			while (isLineFarLeft()) // wait for outer most sensor to exit the line
 			{
 				beepCycle();
 
-				linePosition = qtrrc.readLine(sensorValues);
+				linePosition = readLine();
 			}
 			i--;
 		}
@@ -748,22 +746,22 @@ void GobbitLineCommand::turn(char dir)
 
 		setMotors(turnSpeedHigh, -turnSpeedHigh);
 
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 
-		while (sensorValues[0] < 200) // wait for outer most sensor to find the line
+		while (!isLineFarRight()) // wait for outer most sensor to find the line
 		{
 			beepCycle();
-			linePosition = qtrrc.readLine(sensorValues);
+			linePosition = readLine();
 		}
 
 		// slow down speed to soften turn
 		setMotors(turnSpeedLow, -turnSpeedLow);
 
 		// make sure outer sensor is no longer over line
-		while (sensorValues[0] > 190) // wait for outer most sensor to exit the line
+		while (isLineFarRight()) // wait for outer most sensor to exit the line
 		{
 			beepCycle();
-			linePosition = qtrrc.readLine(sensorValues);
+			linePosition = readLine();
 		}
 
 
@@ -772,12 +770,12 @@ void GobbitLineCommand::turn(char dir)
 
 
 		// previous method
-		/* 		linePosition = qtrrc.readLine(sensorValues);
+		/* 		linePosition = readLine();
 
-		while (sensorValues[0] < 200) // wait for outer most sensor to find the line
+		while (!isLineFarRight()) // wait for outer most sensor to find the line
 		{
 			beepCycle();
-			linePosition = qtrrc.readLine(sensorValues);
+			linePosition = readLine();
 		}
 
 		// slow down speed
@@ -787,14 +785,14 @@ void GobbitLineCommand::turn(char dir)
 		while (sensorValues[0] > 190) // wait for outer most sensor to exit the line
 		{
 			beepCycle();
-			linePosition = qtrrc.readLine(sensorValues);
+			linePosition = readLine();
 		}
 
 		// find center
 		while (linePosition < (3500))// wait for line position to find near center
 		{
 			beepCycle();
-			linePosition = qtrrc.readLine(sensorValues);
+			linePosition = readLine();
 		}
 
 		// stop both motors
@@ -911,7 +909,7 @@ void GobbitLineCommand::turnPID(void)
 		//set motor speeds
 		setMotors(LmotorSpeed, RmotorSpeed);
 
-		linePosition = qtrrc.readLine(sensorValues);
+		linePosition = readLine();
 	}
 
 }
@@ -1614,11 +1612,13 @@ void GobbitLineCommand::setMotors(float leftVelocity, float rightVelocity)
 	RmotorSpeed = rightVelocity;
 	LmotorSpeed = leftVelocity;
 
+	//Set motor speeds
+	motor->setMotors(leftVelocity, rightVelocity);
+
 	// if Adafruit Motorshield v2.3 was defined
 	// Set the speed to start, from 0 (off) to 255 (max speed)
 	if (useAFMS) {
-		//Set motor speeds
-		motor->setMotors(leftVelocity, rightVelocity);
+		//Adafruit is handled by Motor class so just return
 		return;
 	}
 
@@ -1894,7 +1894,7 @@ byte GobbitLineCommand::detectIntersection(void)
 	// We use the inner six sensors (1 thru 6) to
 	// determine if there is a line forward (straight ahead), and the
 	// sensors 0 and 7 if the path turns.
-	if (sensorValues[1] < 100 && sensorValues[2] < 100 && sensorValues[3] < 100 && sensorValues[4] < 100 && sensorValues[5] < 100 && sensorValues[6] < 100) {
+	if (!isLineLeft() && !isLineCenter() && !isLineRight()) {
 		// There is no line visible ahead, and we didn't see any
 		// intersection.  Must be a dead end.
 		foundEnd = 1;
@@ -1906,7 +1906,7 @@ byte GobbitLineCommand::detectIntersection(void)
 		return 1;
 	}
 
-	else if (sensorValues[0] > 200 || sensorValues[7] > 200) {
+	else if (isLineFarRight() || isLineFarLeft()) {
 		// Found an intersection.
 
 		byte left = 0;
@@ -1924,22 +1924,22 @@ byte GobbitLineCommand::detectIntersection(void)
 			beepCycle();
 
 			// Now read the sensors and check the intersection type.
-			linePosition = qtrrc.readLine(sensorValues);
+			linePosition = readLine();
 
 			// Check for left and right exits found.
-			if (sensorValues[0] > 200 && !foundRight) {
+			if (isLineFarRight() && !foundRight) {
 				foundRight = 1;
 				right = 1;
 			}
-			if (sensorValues[7] > 200 && !foundLeft) {
+			if (isLineFarLeft() && !foundLeft) {
 				foundLeft = 1;
 				left = 1;
 			}
 
 			// check if sensor has passed the found lines
-			if (sensorValues[0] < 200 && foundRight)
+			if (!isLineFarRight() && foundRight)
 				right = 0;
-			if (sensorValues[7] < 200 && foundLeft)
+			if (!isLineFarLeft() && foundLeft)
 				left = 0;
 
 			// if passed, exit loop
@@ -1960,8 +1960,8 @@ byte GobbitLineCommand::detectIntersection(void)
 		}
 
 		// check if line continues forward
-		linePosition = qtrrc.readLine(sensorValues);
-		if (sensorValues[1] > 200 || sensorValues[2] > 200 || sensorValues[3] > 200 || sensorValues[4] > 200 || sensorValues[5] > 200 || sensorValues[6] > 200)
+		linePosition = readLine();
+		if (isLineRight() || isLineCenter() || isLineLeft())
 			foundForward = 1;
 
 		// check if at intersection with no forward option
@@ -1985,7 +1985,7 @@ byte GobbitLineCommand::detectIntersection(void)
 byte GobbitLineCommand::detectLine(char sensorLRCA)
 {
 	// check if a line is present
-	linePosition = qtrrc.readLine(sensorValues);
+	linePosition = readLine();
 
 	beepCycle();
 
@@ -1993,26 +1993,26 @@ byte GobbitLineCommand::detectLine(char sensorLRCA)
 
 	// If the line is found on the far Left sensor
 	case 'L':
-		if (sensorValues[7] > 200)
+		if (isLineFarLeft())
 		return 1;
 		break;
 
 	// If the line is found on the far Right sensor
 	case 'R':
-		if (sensorValues[0] > 200)
+		if (isLineFarRight())
 		return 1;
 		break;
 
 	// If the line is found in the middle 2 sensors
 	// Will not use the outer sensors to try and find when more centered.
 	case 'C':
-		if (sensorValues[3] > 200 || sensorValues[4] > 200)
+		if (isLineCenter())
 		return 1;
 		break;
 
 	// Look for the line if found on Any of the sensors
 	case 'A':
-		if (sensorValues[0] > 200 || sensorValues[1] > 200 || sensorValues[2] > 200 || sensorValues[3] > 200 || sensorValues[4] > 200 || sensorValues[5] > 200 || sensorValues[6] > 200 || sensorValues[7] > 200)
+		if (isLineVisible())
 		return 1;
 		break;
 
@@ -2025,6 +2025,29 @@ byte GobbitLineCommand::detectLine(char sensorLRCA)
 
 }
 
+bool GobbitLineCommand::isLineFarRight(){
+	return lineSensor->isLineFarRight();
+}
+
+bool GobbitLineCommand::isLineFarLeft(){
+	return lineSensor->isLineFarLeft();
+}
+
+bool GobbitLineCommand::isLineRight(){
+	return lineSensor->isLineRight();
+}
+
+bool GobbitLineCommand::isLineLeft(){
+	return lineSensor->isLineLeft();
+}
+
+bool GobbitLineCommand::isLineCenter(){
+	return lineSensor->isLineCenter();
+}
+
+bool GobbitLineCommand::isLineVisible(){
+	return lineSensor->isLineVisible();
+}
 
 //-----------------
 // Catch the Line by calling detectLine('A') until any sensor sees the line,
