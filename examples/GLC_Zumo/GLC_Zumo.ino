@@ -25,12 +25,15 @@ GobbitLineCommand MyBot(zumoMotor, zumoLineSensor);
 
 void setup() {
 
-  MyBot.setBatteryVolts(9);
+  MyBot.setPID(0.035, 0, 0.035 * 12);
+  MyBot.setPIDcoarse(0.08, 0, 0.08 * 12);
+  MyBot.setBatteryVolts(12);
 
   MyBot.beginGobbit();
 
-  MyBot.calibrateLineSensor();
-
+  delay(1000);
+  MyBot.calibrateLineSensor(25);
+  delay(1000);
 }
 
 void loop() {

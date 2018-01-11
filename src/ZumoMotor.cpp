@@ -9,6 +9,6 @@ void ZumoMotor::init(){
 }
 
 void ZumoMotor::setMotors(float leftVelocity, float rightVelocity){
-  motors.setLeftSpeed(leftVelocity * 2);
-  motors.setRightSpeed(rightVelocity * 2);
+  motors.setLeftSpeed(leftVelocity * 4);
+  motors.setRightSpeed(rightVelocity * 4);
 }
