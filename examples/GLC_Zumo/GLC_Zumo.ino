@@ -16,8 +16,12 @@
 //#define ADAFRUIT_MS
 
 #include <GobbitLineCommand.h>
+#include <ZumoMotor.h>
+#include <ZumoLineSensor.h>
 
-GobbitLineCommand MyBot;
+ZumoMotor zumoMotor;
+ZumoLineSensor zumoLineSensor;
+GobbitLineCommand MyBot(zumoMotor, zumoLineSensor);
 
 void setup() {
 
