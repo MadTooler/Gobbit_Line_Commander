@@ -1,12 +1,10 @@
-/*
- *  GobbitLineCommand - Library for line following, intersection detection, and basic motor control of Gobbit robot.
- *  Created by Jason Talley 
- *	Last edit 02/02/2017
- *  Released under GNU agreement
- */ 
-
- // NOTE Tab sensitive -- single tab after datatype and before keyword(#)
- 
+#######################################
+# GobbitLineCommand - Library for line following, intersection detection, and basic motor control of Gobbit robot.
+# Created by Jason Talley 
+# Last edit 02/02/2017
+# Released under GNU agreement
+#######################################
+# NOTE Tab sensitive -- single tab after datatype and before keyword(#)
 #######################################
 # Syntax Coloring Map GobbitLineCommand
 #######################################
