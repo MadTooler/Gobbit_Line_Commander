@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 09/18/2017
+*	Last edit 10/20/2018
 *	Released under GNU agreement
 */
 
@@ -40,13 +40,13 @@
 //QTRSensors library must be loaded to your arduino libraries folder.
 // Easiest to use the library manager to install
 // later releases may be able to auto load if this library is made accessible in arduino library manager.
-#include <QTRSensors.h> // Pololu QTR Library
+//#include <QTRSensors.h> // Pololu QTR Library 
+#include "QTRSensors/QTRSensors.h" //**** use a local copy of Pololu QTR Library for temporary easier install
 
 #include "GobbitLineCommand.h"
 #include "config.h"
 #include "AdafruitMSDefaults.h"
 #include "ArdumotoDefaults.h"
-
 
 #if SERVO_ENABLE
 	#include <Servo.h>
@@ -58,7 +58,8 @@
 // load Adafruit Motor Shield library and initialize objects
 //     NOTE cannot access USE_AFMS or status of ADAFRUIT_MS from main sketch for conditinal loading of AFMS library.
 //     This is a limitation of the arduino IDE compiler, and it does not appear to be adopted in the future.
-#include <Adafruit_MotorShield.h>
+//#include <Adafruit_MotorShield.h>
+#include "Adafruit_Motor_Shield_V2_Library/Adafruit_MotorShield.h" //**** use a local copy of Adafruit Library for temporary easier install
 
 // #define ADAFRUIT_MS in main program if the Adafruit motor shield v2.3 is to be used.
 // M1 and M2 will be used.  Right motor on M1, Left on M2.
