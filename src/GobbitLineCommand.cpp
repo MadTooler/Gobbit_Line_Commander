@@ -92,6 +92,10 @@ void GobbitLineCommand::beginGobbit(void)
 	// initialize sensor
 	qtrrc.init(sensorPins, NUM_SENSORS, TIME_OUT, EMITTER_PIN);
 	delay(500); // give sensors time to set
+	
+	// set reference time for PID loop
+	// **** not sure if this is necessary or needed here
+	mLastTime = millis()-mSampleTime;
 
 	if (volts == NOT_SET) {
 		volts = 9;
@@ -612,7 +616,7 @@ void GobbitLineCommand::followLine(byte followMode)
 			// The line is still within the sensors.
 			// This will calculate adjusting speed to keep the line in center.
 
-			// If followLine was called in a mode which is to check for intersctions, then check
+			// If followLine was called in a mode which is to check for intersections, then check
 			if (findIntersection) {	
 				// if an intersection is found then the found flags will be updated and will exit followLine
 				if(detectIntersection())
@@ -639,45 +643,54 @@ void GobbitLineCommand::followLine(byte followMode)
 				kdCurrent = _kd;
 			}
 			
-			// update iAccumError accumulated error
-			iAccumError = iAccumError+error;
-
-			// calculate the new Process Variable
-			// this is the value that will be used to alter the speeds
-			PV = kpCurrent * error + kiCurrent*iAccumError + kdCurrent * (error - lastError);
+			// **** added time check here
+			unsigned long mCurrentTime = millis();
+			unsigned long mCurrentDuration = (mCurrentTime - mLastTime);
+			if(mCurrentDuration>=mSampleTime){
 			
-			lastError = error;
+				// update iAccumError accumulated error
+				iAccumError = iAccumError+error;
 
-			//this code limits the PV (motor speed pwm value)
-			// limit PV to maxSpeed - minSpeed
-			if (PV > (maxSpeed - minSpeed)) {
-				PV = (maxSpeed - minSpeed);
+				// calculate the new Process Variable
+				// this is the value that will be used to alter the speeds
+				PV = kpCurrent * error + kiCurrent*iAccumError + kdCurrent * (error - lastError);
+				
+				lastError = error;
+
+				//this code limits the PV (motor speed pwm value)
+				// limit PV to maxSpeed - minSpeed
+				if (PV > (maxSpeed - minSpeed)) {
+					PV = (maxSpeed - minSpeed);
+				}
+
+				if (PV < -(maxSpeed - minSpeed)) {
+					PV = -(maxSpeed - minSpeed);
+				}
+
+				// run beeper cycle
+				beepCycle();
+
+				if (useRangeSensor) 
+					obstacleSpeedFactor = speedAdjust(readSonarInches());
+				else
+					obstacleSpeedFactor = 1;
+
+				if (PV > 0) {
+					RmotorSpeed = maxSpeed * obstacleSpeedFactor;
+					LmotorSpeed = (maxSpeed - abs(PV)) * obstacleSpeedFactor;
+				}
+
+				if (PV < 0) {
+					RmotorSpeed = (maxSpeed - abs(PV)) * obstacleSpeedFactor;
+					LmotorSpeed = maxSpeed * obstacleSpeedFactor;
+				}
+
+				//set motor speeds
+				setMotors(LmotorSpeed, RmotorSpeed);
+				
+				mLastTime = mCurrentTime;
 			}
-
-			if (PV < -(maxSpeed - minSpeed)) {
-				PV = -(maxSpeed - minSpeed);
-			}
-
-			// run beeper cycle
-			beepCycle();
-
-			if (useRangeSensor) 
-				obstacleSpeedFactor = speedAdjust(readSonarInches());
-			else
-				obstacleSpeedFactor = 1;
-
-			if (PV > 0) {
-				RmotorSpeed = maxSpeed * obstacleSpeedFactor;
-				LmotorSpeed = (maxSpeed - abs(PV)) * obstacleSpeedFactor;
-			}
-
-			if (PV < 0) {
-				RmotorSpeed = (maxSpeed - abs(PV)) * obstacleSpeedFactor;
-				LmotorSpeed = maxSpeed * obstacleSpeedFactor;
-			}
-
-			//set motor speeds
-			setMotors(LmotorSpeed, RmotorSpeed);
+			else beepCycle(); // run beeper cycle
 		}
 
 		// Exit followLine if it is in a single adjustment mode

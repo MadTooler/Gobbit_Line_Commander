@@ -225,6 +225,8 @@ class GobbitLineCommand
 		
 
 		// pid loop vars
+		unsigned long mLastTime;
+		unsigned long mSampleTime = PROCESS_TIME;
 		float error = 0;
 		float lastError = 0;
 		float iAccumError = 0;	
