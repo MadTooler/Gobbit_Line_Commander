@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h - library variables for the Gobbit robot
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 10/20/2018
+*	Last edit 10/25/2018
 *	Released under GNU agreement
 */
 
@@ -11,11 +11,11 @@
 
 	// time in milliseconds between processing of PID loop
 	// set to 0 to revert back to initial version where processor cycle time was the delay
-	#define PROCESS_TIME	10
+	#define PROCESS_TIME	0
 
 	// line sensor defines/constants
 	#define NUM_SENSORS   8     // number of sensors used
-	#define TIME_OUT       2500  // waits for 2500 microseconds for sensor outputs to go low (2.5 milleseconds)
+	#define TIME_OUT       2500  // waits for 2500 microseconds for sensor outputs to go low (2.5 milliseconds)
 	#define EMITTER_PIN   QTR_NO_EMITTER_PIN  // emitter control pin not used.  If added, replace QTR_NO_EMITTER_PIN with pin#
 	
 	// Cutoff time in milliseconds to stop sensing for intersection if the end of the intersection has not been found.
@@ -24,7 +24,7 @@
 	#define FIND_INTERSECTION_MAXTIME 1000
 	
 	// Time in milliseconds to evaluate if a marker on the course was found.
-	// The marker needs to be a large black area, if using electrical tape, about 3 strips next to eachother by wider than 
+	// The marker needs to be a large black area, if using electrical tape, about 3 strips next to each other by wider than 
 	// the sensor (total about 2" x 4-1/4").
 	// If the robot is in lineFollow mode for detecting intersections, or in drive mode, and it runs over a mark for
 	// period of time greater than this value, and passes back onto white background before the FIND_INTERSECTION_MAXTIME, then it 

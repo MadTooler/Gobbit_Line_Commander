@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 10/20/2018
+*	Last edit 10/25/2018
 *	Released under GNU agreement
 */
 
@@ -56,7 +56,7 @@
 #endif
 
 // load Adafruit Motor Shield library and initialize objects
-//     NOTE cannot access USE_AFMS or status of ADAFRUIT_MS from main sketch for conditinal loading of AFMS library.
+//     NOTE cannot access USE_AFMS or status of ADAFRUIT_MS from main sketch for conditional loading of AFMS library.
 //     This is a limitation of the arduino IDE compiler, and it does not appear to be adopted in the future.
 //#include <Adafruit_MotorShield.h>
 #include "Adafruit_Motor_Shield_V2_Library/Adafruit_MotorShield.h" //**** use a local copy of Adafruit Library for temporary easier install
@@ -512,7 +512,7 @@ void GobbitLineCommand::drive(char turnDir)
 //
 //      If setSonar has been called and a valid pin was set for the sensor, followLine also reads the sonar,
 //      updates the distanceInch variable, and controls/slows down the motor speed per the range of safe distance
-//      everytime it is called
+//      every time it is called
 void GobbitLineCommand::followLine(byte followMode)
 {
 
@@ -536,13 +536,13 @@ void GobbitLineCommand::followLine(byte followMode)
 		runOnce = 1;
 		break;
 		
-	// follow for one motor adjustment and check if there was an intersction found then return
+	// follow for one motor adjustment and check if there was an intersection found then return
 	case 2:
 		findIntersection = 1;
 		runOnce = 1;
 		break;	
 	
-	// follow until an intersction is found then return
+	// follow until an intersection is found then return
 	case 3:
 		findIntersection = 1;
 		runOnce = 0;
@@ -568,7 +568,7 @@ void GobbitLineCommand::followLine(byte followMode)
 		// adjusted that had been leading to an exaggerated "twirk" when crossing the intersections.
 		// "Twirk" is a result of fast reaction of bot to early or uneven sensor reads from seeing
 		// part of an intersection before other parts since it would only not "twirk" if the intersection
-		// was perfecting entered with all sensors reading simulataneously, which could almost never 
+		// was perfecting entered with all sensors reading simultaneously, which could almost never 
 		// be the case since they are read in series.
 
 		// tried this array before with a larger buffer, but it did not seem to work well.
@@ -585,7 +585,7 @@ void GobbitLineCommand::followLine(byte followMode)
 
 		offLine = 0;
 
-		// read calibrated sensor values and obtain a measure of the currnet line position from 0 to 7000.
+		// read calibrated sensor values and obtain a measure of the current line position from 0 to 7000.
 		linePosition = qtrrc.readLine(sensorValues);
 
 		// simple line following portion for way off line adjustment
@@ -643,10 +643,13 @@ void GobbitLineCommand::followLine(byte followMode)
 				kdCurrent = _kd;
 			}
 			
-			// **** added time check here
+			
+#if PROCESS_TIME
+			// added time check here to run only if PROCESS_TIME IS greater than 0
 			unsigned long mCurrentTime = millis();
 			unsigned long mCurrentDuration = (mCurrentTime - mLastTime);
 			if(mCurrentDuration>=mSampleTime){
+#endif
 			
 				// update iAccumError accumulated error
 				iAccumError = iAccumError+error;
@@ -687,11 +690,16 @@ void GobbitLineCommand::followLine(byte followMode)
 
 				//set motor speeds
 				setMotors(LmotorSpeed, RmotorSpeed);
-				
+
+#if PROCESS_TIME				
 				mLastTime = mCurrentTime;
+				
 			}
 			else beepCycle(); // run beeper cycle
+#endif
+			
 		}
+		
 
 		// Exit followLine if it is in a single adjustment mode
 		if(runOnce)
@@ -1185,7 +1193,7 @@ void GobbitLineCommand::backup(int speed, int delayTime)
 //-----------------
 // Sets the battery voltage which is used for choosing proper pd and motor tunings.
 // This function does not read from any pins.
-// 0 will force default of 9volt setttings
+// 0 will force default of 9volt settings
 void GobbitLineCommand::setBatteryVolts(float unreadVolts)
 {
 
@@ -1830,7 +1838,7 @@ void GobbitLineCommand::brakeMotors(int bStrength,char direction)
 //   devices other than beepers could be controlled by this function.
 void GobbitLineCommand::setBeeperPin(int pin)
 {
-	// set pin mode for peizo style beeper
+	// set pin mode for piezo style beeper
 	pinMode(pin, OUTPUT);
 
 	// only used as flag and feedback for serialPrintCurrentSettings

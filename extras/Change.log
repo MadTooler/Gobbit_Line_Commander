@@ -1,6 +1,24 @@
 change log
 
-0.0.9
+0.0.95
+
+	Added ScoutBotics Examples for both Level 1 and Level 2 with IRcontrol.
+	
+	Updated RaceTrackRobots example to use same default wiring as IRcontrol.
+	
+	Set PROCESS_TIME to 0 to disable until proper timing default and PIDs can be tested.
+
+0.0.93
+
+	Added PROCESS_TIME define to config.h and a mSampleTime time check in the PID loop to have a more consistent control loop.
+	
+0.0.92
+
+	Added local copies of QTRSensor library and Adafruit Motor Shield library to eliminate need to load them separate. 
+		This is a temporary solution.
+		Future solutions will require significant rewrite and probably use Virtual Functions.
+	
+0.0.90
 
 	Added Ardumoto v14 and v20 and AdafruitMS default pin values in their .h files
 	
