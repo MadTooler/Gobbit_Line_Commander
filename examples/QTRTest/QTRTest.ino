@@ -68,7 +68,8 @@
 
 
 //QTRSensors folder must be placed in your arduino libraries folder
-#include <QTRSensors.h>  // Pololu QTR Library 
+//#include <QTRSensors.h>  // Pololu QTR Library 
+#include "QTRSensors/QTRSensors.h" //**** use a local copy of Pololu QTR Library for temporary easier install
 
 //line sensor defines
 #define NUM_SENSORS   8     // number of sensors used
