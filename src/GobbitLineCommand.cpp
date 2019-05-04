@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 10/25/2018
+*	Last edit 05/04/2019
 *	Released under GNU agreement
 */
 
@@ -2089,5 +2089,56 @@ void GobbitLineCommand::resetIntFlags(byte resetMark)
 	foundRight = 0;
 	foundEnd = 0;
 	brakeNext = 0;
+	
+}
+
+
+//-----------------
+// QTRtest serial program
+// this has been moved within the library to simplify accessing a local QTRsensors library
+void GobbitLineCommand::QTRtest(void)
+{
+  Serial.begin(115200);
+
+  Serial.println("Gobbit Line Command");
+  Serial.println("QTR line sensor Test");
+  //Serial.print("Version ");
+  //Serial.println(SKETCH_VERSION);
+  Serial.println();
+
+  delay(2500);
+
+	while(1){
+	// This will print the sensor numbers. If needed uncomment.
+	//Serial.println("8 7 6 5 4 3 2 1 ");
+
+	// read raw sensor values.
+	qtrrc.read(sensorValues);
+
+	// print indicators if the sensor sees the line
+	for (int i = NUM_SENSORS - 1; i >= 0; i--)
+	{
+		if (sensorValues[i] > 600)
+		{
+			if (sensorValues[i] > 1000)
+		{
+		Serial.print("XX");
+		}
+		else Serial.print("--");
+	}
+	else Serial.print("__");
+	}
+	Serial.println();
+
+	// This will print the raw sensor values. If needed, uncomment.
+	//   for (int i = NUM_SENSORS-1; i >= 0; i--)
+	//  {
+	//    Serial.print(sensorValues[i]);
+	//    Serial.print("  ");
+	//  }
+	//  Serial.println();
+
+	delay(20);
+	}
 	
 }

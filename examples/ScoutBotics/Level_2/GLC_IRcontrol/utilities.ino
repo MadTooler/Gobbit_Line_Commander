@@ -180,9 +180,3 @@ int keepGoing(void) {
   }
   else return 1;
 }
-
-
-
-
-
-

@@ -1,5 +1,13 @@
 change log
 
+0.0.96
+
+	Minor changes...
+
+	Added IR codes to the ScoutBotics level 2 example IRcontrol
+	
+	Changed QTRtest to be mostly within the library for the purpose of using the local QTRSensor library
+
 0.0.95
 
 	Added ScoutBotics Examples for both Level 1 and Level 2 with IRcontrol.

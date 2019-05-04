@@ -4,7 +4,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 10/28/2017
+*	Last edit 05/04/2019
 *	Released under GNU agreement
 */
 
@@ -415,4 +415,9 @@ byte isItFound5 = MyBot.foundMark;
 // The latest range in inches read by sonar sensor.  The drive(), followline(), and readSonarInches() 
 // all update this value, but setSonar must have been called first.
 float lastSonarDistanceRead = MyBot.distanceInch;
+
+// QTRtest serial program
+// this has been moved within the library to simplify accessing a local QTRsensors library
+// use this with the example program to test the functionality of the QTRRC sensor in serial monitor
+void GobbitLineCommand::QTRtest(void)
 }

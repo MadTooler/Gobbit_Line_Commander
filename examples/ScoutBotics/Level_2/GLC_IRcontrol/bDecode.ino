@@ -320,4 +320,3 @@ int buttonDecode(void) {
   return 0;
 
 }
-

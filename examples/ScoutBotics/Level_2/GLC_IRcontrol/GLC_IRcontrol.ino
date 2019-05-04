@@ -1,4 +1,4 @@
-/* 10/25/2018
+/* 05/04/2019
 
   This program will setup the Gobbit robot to be controlled and programmable by an infrared (IR) remote.
 
@@ -173,14 +173,3 @@ void loop() {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-

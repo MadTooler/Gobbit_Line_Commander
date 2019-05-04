@@ -2,7 +2,7 @@
 *	GobbitLineCommand.h
 *	Library for line following, intersection detection, and basic motor control of Gobbit robot.
 *	Created by Jason Talley 
-*	Last edit 10/25/2018
+*	Last edit 05/04/2019
 *	Released under GNU agreement
 */
 
@@ -121,6 +121,7 @@ class GobbitLineCommand
 		void checkBattery(int analogPin, float minVoltage, float smallResK, float largeResK); // checks the battery voltage on declared analog pin, cutoff voltage, and resistor values in K for voltage divider
 		void beep(unsigned int count,unsigned int length, byte wait);  // set values for the beeper to be engaged within the main library loops.
 		float readSonarInches(void); // Read the sonar sensor from the set pin and return the current distance in inches.
+		void  QTRtest(void); // QTRtest serial program.  This has been moved within the library to simplify accessing a local QTRsensors library
 		
 		#if SERVO_ENABLE
 			void setGripPinOpenClosed(int pin, int open, int closed); // sets the gripper servo pin#, degree of open position, degree of closed position.

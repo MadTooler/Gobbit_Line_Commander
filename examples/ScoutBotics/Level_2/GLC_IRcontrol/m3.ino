@@ -352,6 +352,3 @@ byte findNext(byte _keepPlaying) {
     }
     return _keepPlaying;
 }
-
-
-

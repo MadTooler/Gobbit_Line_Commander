@@ -43,6 +43,3 @@ void Tile6()
 {
   // add your directions here
 }
-
-
-
