@@ -7,7 +7,7 @@ The built in functions range from simple out of the box single command line foll
 
 For line following, the Pololu QTR-8RC infrared line sensor is required.  
 
-The Adafruit Motor Shield V2 and the QTRSensors libraries are required.
+Local copies of the Adafruit Motor Shield V2 and the QTRSensors libraries are embedded in this library.
 
 https://youtu.be/cKk6qsHKJO8
 
